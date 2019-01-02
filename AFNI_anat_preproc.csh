@@ -26,25 +26,10 @@ setenv ANALYSIS_DIR $MSIT_DIR/scripts
 # Define parameters
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-# formerly 'seq+z'. Here, slices interleaved and odd.. possibly 'alt+z2' ?
-set slice_pattern =  $ANALYSIS_DIR/slice_timing.txt
-
-# number of regressors (e.g. wm, csf, motion)
-set num_stimts = 28
-
-# A = automatically choose polynomial detrending value based on
-# time duration D of longest run: pnum = 1 + int(D/150)
-set polort = A
-
-set FWHM = 6
-set TR = 1.75
-set slices = 63
-
 set study = msit
 set task = (${study}_bsm)
 
 set do_anat = 'yes'
-set do_epi = 'no'
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Initialize subject(s) environment

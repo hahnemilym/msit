@@ -54,7 +54,7 @@ set task = (${study}_bsm)
 
 set do_epi = 'yes'
 
-# expand_nii_bandit_task.m - shows dir struct used in orig script
+# expand_nii_bandit_task.m - shows orig dir struct
 # matlab -nodesktop -nosplash -r "expand_nii_bandit_task;exit"
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

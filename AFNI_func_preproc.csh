@@ -1,6 +1,14 @@
 #! /bin/csh
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# To-do:
+# 1. Find GSR step, remove GSR
+# 2. Review motion corr .m script
+# 3. Review 'rm' steps to orig script, while keeping in mind orig dir struct
+# 4. Siemens interleaved slice pattern ??
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Configure environment
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
@@ -27,9 +35,10 @@ setenv ANALYSIS_DIR $MSIT_DIR/scripts
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 # formerly 'seq+z'. Here, slices interleaved and odd.. possibly 'alt+z2' ?
-set slice_pattern =  $ANALYSIS_DIR/slice_timing.txt
+#set slice_pattern =  $ANALYSIS_DIR/slice_timing.txt
+set slice_pattern = 'alt+z2'
 
-# number of regressors (e.g. wm, csf, motion)
+# number of regressors [WM, CSF, motion]
 set num_stimts = 28
 
 # A = automatically choose polynomial detrending value based on
@@ -136,26 +145,33 @@ ${study}.${subj}.${task}.deoblique+orig
 #rm ${study}.${subj}.${task}.deoblique+orig*
 
 echo "****************************************************************"
-echo making motion regressors
+echo " AFNI | Generate Motion Regressors "
 echo "****************************************************************"
 
-# wtf is make_motion_regressors and y r params not passed to it. send help
 matlab -nodesktop -nosplash -r "make_motion_regressors;exit"
 
 cd ${activeSubjectdirectory}
 
 echo "****************************************************************"
-echo warping EPI to anat space and normalizing
+echo " AFNI | Warp Functional (EPI) to Structural (MEMPRAGE) Space "
 echo "****************************************************************"
 
 cp ${activeSubjectdirectory}/anat/*sksp* .
 
 #rm ${study}.${subj}.${task}.motion_shft+orig*
 
-#@Align_Centers -base ${study}.${subj}.anat.sksp+orig -dset ${study}.${subj}.${task}.motion+orig
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# @Align_Centers: OPTIONAL
+# Move the center of DSET to the center of BASE,
+# i.e. center of the volume's voxel grid
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+#@Align_Centers \
+#-base ${study}.${subj}.anat.sksp+orig \
+#-dset ${study}.${subj}.${task}.motion+orig
 #rm ${study}.${subj}.${task}.motion_py+orig*
 #rm ${study}.${subj}.${task}.motion_shft_tlrc_py+tlrc*
 #rm ${study}.${subj}.${task}.motion_tlrc_py+tlrc*
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 align_epi_anat.py \
 -anat ${study}.${subj}.anat.sksp+orig \
@@ -170,7 +186,10 @@ align_epi_anat.py \
 -deoblique off \
 -move
 
-#use below command when running the @Align_Centers above
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# align_epi_anat.py: OPTIONAL
+# Use when running @Align_Centers (above)
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 #align_epi_anat.py \
 #-anat ${study}.${subj}.anat.sksp+orig \
 #-epi ${study}.${subj}.${task}.motion_shft+orig \
@@ -178,11 +197,17 @@ align_epi_anat.py \
 #-tlrc_apar ${study}.${subj}.anat.sksp_MNI+tlrc \
 #-anat_has_skull no -volreg off -tshift off -deoblique off
 
-#3drename ${study}.${subj}.${task}.motion_shft_tlrc_py+tlrc \
+#3drename \
+#${study}.${subj}.${task}.motion_shft_tlrc_py+tlrc \
 #${study}.${subj}.${task}.motion_tlrc_py
 #rm ${study}.${subj}.${task}.mean*
 #rm ${study}.${subj}.${task}.stdev_no_smooth*
 #rm ${study}.${subj}.${task}.tSNR_no_smooth*
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+
+echo "****************************************************************"
+echo " AFNI | Normalise Coregistered Data"
+echo "****************************************************************"
 
 3dTstat \
 -prefix ${study}.${subj}.${task}.mean \
@@ -199,28 +224,24 @@ ${study}.${subj}.${task}.motion_tlrc_py+tlrc
 -expr 'a/b' \
 -prefix ${study}.${subj}.${task}.tSNR_no_smooth
 
-#copy the mean image to reg check directory to check alignment and normalization
-#cp ${study}.${subj}.${task}.mean+tlrc* ${rootpth}/regcheck/day1
-#cp ${study}.${subj}.${task}.tSNR_no_smooth+tlrc* ${rootpth}/tSNR/day1
 #rm ${study}.${subj}.${task}.motion+orig
 #rm *malldump*
 
 echo "****************************************************************"
-echo regressing out csf and wm and global signal
+echo " AFNI | Generate Nuisance Regressor Masks: CSF, WM, Global Signal "
 echo "****************************************************************"
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-#first create masks for GM, WM, CSF and global signal
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# *** TO DO: ***
+# 1. Figure out where GSR is 2. Remove GSR
 
 cd ${activeSubjectdirectory}/anat/
 
 #rm ${activeSubjectdirectory}/anat/${study}.${subj}.anat.seg.fsl.MNI.3x3x3+tlrc*
 
 3dfractionize \
--template ${activeSubjectdirectory}/${study}.${subj}.${task}.motion_tlrc_py+tlrc \
+-template ${study}.${subj}.${task}.motion_tlrc_py+tlrc \
 -input ${study}.${subj}.anat.seg.fsl.MNI+tlrc \
--prefix ${activeSubjectdirectory}/anat/${study}.${subj}.anat.seg.fsl.MNI.3x3x3 \
+-prefix ${study}.${subj}.anat.seg.fsl.MNI.3x3x3 \
 -clip .2 -vote
 
 #rm ${study}.${subj}.anat.seg.fsl.MNI.CSF+tlrc*
@@ -247,9 +268,9 @@ cd ${activeSubjectdirectory}/anat/
 -expr 'equals(a,3)' \
 -prefix ${study}.${subj}.anat.seg.fsl.MNI.WM
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-# create an WM mask with 1 voxel erosion
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+echo "****************************************************************"
+echo " AFNI | Create WM Mask w/ 1 Voxel Erosion "
+echo "****************************************************************"
 
 #rm ${study}.${subj}.anat.seg.fsl.MNI.WM.erode1+tlrc*
 
@@ -259,9 +280,9 @@ cd ${activeSubjectdirectory}/anat/
 -expr 'a*(1-amongst(0,b,c,d,e,f,g))' \
 -prefix ${study}.${subj}.anat.seg.fsl.MNI.WM.erode1
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-# create an WM mask with 2 voxel erosion
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+echo "****************************************************************"
+echo " AFNI | Create WM Mask w/ 2 Voxel Erosion "
+echo "****************************************************************"
 
 #rm ${study}.${subj}.anat.seg.fsl.MNI.WM.erode2+tlrc*
 
@@ -271,15 +292,15 @@ cd ${activeSubjectdirectory}/anat/
 -expr 'a*(1-amongst(0,b,c,d,e,f,g))' \
 -prefix ${study}.${subj}.anat.seg.fsl.MNI.WM.erode2
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-#remove WM mask with 1 voxel
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+echo "****************************************************************"
+echo " AFNI | Remove WM Mask w/ 1 Voxel Erosion "
+echo "****************************************************************"
 
 rm ${study}.${subj}.anat.seg.fsl.MNI.WM.erode1+tlrc
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-# create an CSF mask with 1 voxel erosion
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+echo "****************************************************************"
+echo " AFNI | Create CSF Mask w/ 1 Voxel Erosion "
+echo "****************************************************************"
 
 #rm ${study}.${subj}.anat.seg.fsl.MNI.CSF.erode1+tlrc*
 
@@ -291,9 +312,9 @@ rm ${study}.${subj}.anat.seg.fsl.MNI.WM.erode1+tlrc
 
 cd ${activeSubjectdirectory}/${task}
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-#create CSF and WM regressors using maskSVD
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+echo "****************************************************************"
+echo " AFNI | Create CSF and WM Nuisance Regressors Using maskSVD "
+echo "****************************************************************"
 
 3dmaskSVD \
 -vnorm \
@@ -320,10 +341,10 @@ cd ${activeSubjectdirectory}/${task}
 -infile NOISE_REGRESSOR.${task}.CSF.1D -derivative \
 -write    NOISE_REGRESSOR.${task}.CSF.derivative.1D
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-# perform regression of WM, CSF, and motion
-# keep residuals (errts = error timeseries)
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+echo "****************************************************************"
+echo " AFNI | Regress out WM, CSF, and Motion "
+echo " Retain Residuals (errts = error timeseries) "
+echo "****************************************************************"
 
 #rm ${study}.${subj}.${task}.motion_tlrc_py.resid+tlrc*
 #rm ${study}.${subj}.${task}.motion.resid+tlrc*
@@ -376,7 +397,7 @@ cd ${activeSubjectdirectory}/${task}
 #rm ${study}.${subj}.${task}.motion_tlrc_py+tlrc*
 
 echo "****************************************************************"
-echo detrending
+echo " AFNI | Polynomial Detrending "
 echo "****************************************************************"
 
 rm ${study}.${subj}.${task}.detrend.resid+tlrc*
@@ -402,7 +423,7 @@ ${study}.${subj}.${task}.detrend.resid
 #rm detrend.resid_w_mean+tlrc*
 
 echo "****************************************************************"
-echo spatial smoothing
+echo " AFNI | Spatial Smoothing "
 echo "****************************************************************"
 
 #rm ${study}.${subj}.${task}.smooth.resid+tlrc*
@@ -415,9 +436,8 @@ echo "****************************************************************"
 
 #rm ${study}.${subj}.${task}.fourier.resid+tlrc*
 
-
 echo "****************************************************************"
-echo scaling to percent signal change
+echo " AFNI | Scale to Percent Signal Change (PSC) "
 echo "****************************************************************"
 
 #rm ${study}.${subj}.${task}.mean.resid+tlrc*
@@ -443,7 +463,10 @@ ${study}.${subj}.${task}.smooth.resid+tlrc
 -float \
 -prefix ${study}.${subj}.${task}.scaled.resid
 
-#alternative method of scaling: expr "c*(100*((a-b)/abs(b)))"
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
+# Alternative PSC Scaling Method (3dcalc):
+# -expr "c*(100*((a-b)/abs(b)))"
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 #rm ${study}.${subj}.${task}.fourier.resid+tlrc*
 #rm ${study}.${subj}.${task}.mean.resid+tlrc*
@@ -451,11 +474,11 @@ ${study}.${subj}.${task}.smooth.resid+tlrc
 #rm ${study}.${subj}.${task}.std.resid+tlrc*
 
 echo "****************************************************************"
-echo "DONE"
+echo " DONE"
 echo "****************************************************************"
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-# exit loop: anat preproc
+# exit loop: func preproc
 endif
 
 # exit loop: subjs

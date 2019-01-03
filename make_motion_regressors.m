@@ -1,11 +1,11 @@
 clear
 
-task='msit_bsm'
-study='msit'
+task='msit_bsm';
+study='msit';
 dir = '/Users/emilyhahn/projects/msit/subjs/';
 subdir = ['/' task '/' 'func' '/'];
 
-subjects_list={'test_001' 'test_002'};
+subjects_list={'test_001'};
 
 for i = 1 : length(subjects_list)
     
@@ -46,11 +46,11 @@ for i = 1 : length(subjects_list)
     end
 
     %dlmwrite(['/Users/emilyhahn/projects/msit/subjs/' subj '/' subj '.' task '.FD.1D'],FD,' ');
-    dlmwrite([dir subj '/' subdir subj '.' task '.motion_derivative.1D'],motion_d,' ');
+    dlmwrite([dir subj '/' subdir study '.' subj '.' task '.motion_derivative.1D'],motion_d,' ');
     %dlmwrite(['/Users/emilyhahn/projects/msit/subjs/' subj '/' subj '.' task '.censor.1D'],censor,' ');
-    dlmwrite([dir subj '/' subdir subj '.' task '.num_TRs'],num_TRs,' ');
-    dlmwrite([dir subj '/' subdir subj '.' task '.motion.square.1D'],motion_square,' ');
-    dlmwrite([dir subj '/' subdir subj '.' task '.motion_pre_t.1D'],motion_pre_t,' ');
-    dlmwrite([dir subj '/' subdir subj '.' task '.motion_pre_t_square.1D'],motion_pre_t_square,' ');
+    dlmwrite([dir subj '/' subdir study '.' subj '.' task '.num_TRs'],num_TRs,' ');
+    dlmwrite([dir subj '/' subdir study '.' subj '.' task '.motion.square.1D'],motion_square,' ');
+    dlmwrite([dir subj '/' subdir study '.' subj '.' task '.motion_pre_t.1D'],motion_pre_t,' ');
+    dlmwrite([dir subj '/' subdir study '.' subj '.' task '.motion_pre_t_square.1D'],motion_pre_t_square,' ');
     
 end

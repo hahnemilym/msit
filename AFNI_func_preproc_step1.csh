@@ -34,9 +34,10 @@ setenv ANALYSIS_DIR $MSIT_DIR/scripts
 # Define parameters
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-# formerly 'seq+z'. Here, slices interleaved and odd.. possibly 'alt+z2' ?
-#set slice_pattern =  $ANALYSIS_DIR/slice_timing.txt
-set slice_pattern = 'alt+z2'
+# formerly 'seq+z'. Here, slices interleaved and odd...
+#set slice_pattern = 'FROM_IMAGE'
+set slice_pattern = 'alt+z'
+#set slice_pattern = '@filename'
 
 # number of regressors [WM, CSF, motion]
 set num_stimts = 28
@@ -78,82 +79,80 @@ if ( ${do_epi} == 'yes' ) then
 
 cd $activeSubjectdirectory/func
 
-echo "****************************************************************"
-echo " AFNI | AFNI to NIFTI "
-echo "****************************************************************"
+#echo "****************************************************************"
+#echo " AFNI | AFNI to NIFTI "
+#echo "****************************************************************"
 
-3dAFNItoNIFTI \
--prefix ${study}.${subj}.${task}.nii \
-concat_${study}.${subj}.${task}.+orig
+#3dAFNItoNIFTI -prefix $activeSubjectdirectory/${study}.${subj}.${task}.nii $activeSubjectdirectory/func/concat_${study}.${subj}.${task}.+orig
 
-echo "****************************************************************"
-echo " AFNI | Despiking"
-echo "****************************************************************"
+#echo "****************************************************************"
+#echo " AFNI | Despiking"
+#echo "****************************************************************"
 
 #rm ${study}.${subj}.${task}.DSPK*
 
-3dDespike \
--overwrite \
--prefix ${study}.${subj}.${task}.DSPK \
-${study}.${subj}.${task}.nii
+#3dDespike \
+#-overwrite \
+#-prefix ${study}.${subj}.${task}.DSPK \
+#${study}.${subj}.${task}.nii
 
 #rm ${study}.${subj}.${task}.nii
 
-echo "****************************************************************"
-echo " AFNI | 3dTshift "
-echo "****************************************************************"
+#echo "****************************************************************"
+#echo " AFNI | 3dTshift "
+#echo "****************************************************************"
 
 #rm ${study}.${subj}.${task}.tshft+orig*
 
-3dTshift \
--ignore 1 \
--tzero 0 \
--TR ${TR} \
--tpattern ${slice_pattern} \
--prefix ${study}.${subj}.${task}.tshft \
-${study}.${subj}.${task}.DSPK+orig
+#3dTshift \
+#-ignore 1 \
+#-tzero 0 \
+#-TR ${TR} \
+#-tpattern ${slice_pattern} \
+#-prefix ${study}.${subj}.${task}.tshft \
+#${study}.${subj}.${task}.DSPK+orig
 
 #rm ${study}.${subj}.${task}.DSPK+orig*
 
-echo "****************************************************************"
-echo " AFNI | Deobliquing "
-echo "****************************************************************"
+#echo "****************************************************************"
+#echo " AFNI | Deobliquing "
+#echo "****************************************************************"
 
 #rm ${study}.${subj}.${task}.deoblique+orig*
 
-3dWarp \
--deoblique \
--prefix ${study}.${subj}.${task}.deoblique \
-${study}.${subj}.${task}.tshft+orig
+#3dWarp \
+#-deoblique \
+#-prefix ${study}.${subj}.${task}.deoblique \
+#${study}.${subj}.${task}.tshft+orig
 
 #rm ${study}.${subj}.${task}.tshft+orig*
 
-echo "****************************************************************"
-echo " AFNI | Motion Correction "
-echo "****************************************************************"
+#echo "****************************************************************"
+#echo " AFNI | Motion Correction "
+#echo "****************************************************************"
 
 #rm ${study}.${subj}.${task}.motion+orig*
 
-3dvolreg \
--verbose \
--zpad 1 \
--base ${study}.${subj}.${task}.deoblique+orig'[10]' \
--1Dfile ${study}.${subj}.${task}.motion.1D \
--prefix ${study}.${subj}.${task}.motion \
-${study}.${subj}.${task}.deoblique+orig
+#3dvolreg \
+#-verbose \
+#-zpad 1 \
+#-base ${study}.${subj}.${task}.deoblique+orig'[10]' \
+#-1Dfile ${study}.${subj}.${task}.motion.1D \
+#-prefix ${study}.${subj}.${task}.motion \
+#${study}.${subj}.${task}.deoblique+orig
 
 #rm ${study}.${subj}.${task}.deoblique+orig*
 
-echo "****************************************************************"
-echo " AFNI | Generate Motion Regressors "
-echo "****************************************************************"
-
-echo "TO RUN [Generate Motion Regressors] STEP:"
-echo "1. OPEN: make_motion_regressors.m and add INDIVIDUAL subject to subjects loop"
-echo '2. TYPE: >> matlab -nodesktop -nosplash -r "make_motion_regressors;exit" '
-echo '3. PROCEED to AFNI_func_preproc_step2.csh'
-
-#matlab -nodesktop -nosplash -r "make_motion_regressors;exit"
+#echo "****************************************************************"
+#echo " AFNI | Generate Motion Regressors "
+#echo "****************************************************************"
+#
+#echo "TO RUN [Generate Motion Regressors] STEP:"
+#echo "1. OPEN: make_motion_regressors.m and add INDIVIDUAL subject to subjects loop"
+#echo '2. TYPE: >> matlab -nodesktop -nosplash -r "make_motion_regressors;exit" '
+#echo '3. PROCEED to AFNI_func_preproc_step2.csh'
+#
+##matlab -nodesktop -nosplash -r "make_motion_regressors;exit"
 
 echo "****************************************************************"
 echo " DONE"

@@ -41,22 +41,21 @@ set subjects = (test_001)
 
 foreach subj ($subjects)
 
-cd $SUBJECTS_DIR/${subj}/${task}
-set activeSubjectdirectory = `pwd`
-
 echo "****************************************************************"
 echo " AFNI | Anatomical preprocessing "
 echo "****************************************************************"
 
 if ( ${do_anat} == 'yes' ) then
 
-cd $activeSubjectdirectory/anat
+setenv DATA_DIR $SUBJECTS_DIR/${subj}/${task}
+
+cd $DATA_DIR/anat
 
 echo "****************************************************************"
 echo " AFNI | Skull stripping - Round 1
 echo "****************************************************************"
 
-rm ${study}.${subj}.anat.sksp+orig*
+#rm ${study}.${subj}.anat.sksp+orig*
 
 3dSkullStrip \
 -input ${study}.${subj}.anat.nii \
@@ -68,8 +67,7 @@ echo "****************************************************************"
 echo " AFNI | Skull stripping - Round 2 (to ensure accuracy) "
 echo "****************************************************************"
 
-# remove existing output from this step
-rm ${study}.${subj}.anat.sksp1+orig*
+#rm ${study}.${subj}.anat.sksp1+orig*
 
 3dSkullStrip \
 -input ${study}.${subj}.anat.sksp+orig \
@@ -77,8 +75,7 @@ rm ${study}.${subj}.anat.sksp1+orig*
 -orig_vol \
 -niter 300
 
-# remove second skull strip input
-rm ${study}.${subj}.anat.sksp+orig*
+#rm ${study}.${subj}.anat.sksp+orig*
 
 echo "****************************************************************"
 echo " AFNI | 3dcopy "
@@ -88,16 +85,14 @@ echo "****************************************************************"
 ${study}.${subj}.anat.sksp1+orig \
 ${study}.${subj}.anat.sksp
 
-# remove second skull strip output
-rm ${study}.${subj}.anat.sksp1+orig*
+#rm ${study}.${subj}.anat.sksp1+orig*
 
 echo "****************************************************************"
 echo " AFNI | @auto_tlrc
 echo "****************************************************************"
 
-# remove existing output from this step
-rm ${study}.${subj}.anat.sksp_MNI+tlrc*
-rm ${study}.${subj}.anat.mask*
+#rm ${study}.${subj}.anat.sksp_MNI+tlrc*
+#rm ${study}.${subj}.anat.mask*
 
 @auto_tlrc \
 -no_ss \
@@ -114,18 +109,13 @@ echo "****************************************************************"
 -prefix ${study}.${subj}.anat.mask \
 ${study}.${subj}.anat.sksp_MNI+tlrc
 
-# maybe add:
-# cp normalised anat files to group and reg check directories
-
 echo "****************************************************************"
 echo " AFNI | Configure FSL segmentation "
 echo "****************************************************************"
 
-# remove second skull strip input
-rm ${study}.${subj}.anat.sksp.nii*
-rm ${study}.${subj}.anat_seg.nii.gz
+#rm ${study}.${subj}.anat.sksp.nii*
+#rm ${study}.${subj}.anat_seg.nii.gz
 
-# convert skull stripped img: AFNI to NIFTI
 3dresample \
 -orient ASR \
 -inset ${study}.${subj}.anat.sksp+orig.HEAD \
@@ -143,10 +133,8 @@ echo "****************************************************************"
 
 # NOTE: order of the following commands is important
 
-# remove existing output from this step
-rm ${study}.${subj}.anat.seg.float+orig*
+#rm ${study}.${subj}.anat.seg.float+orig*
 
-# unzip FSL output
 gunzip ${study}.${subj}.anat_seg.nii.gz
 
 3dcopy \
@@ -161,8 +149,7 @@ echo " AFNI | Convert the data type from float to short
 echo " Note: FSL stamp is applied
 echo "****************************************************************"
 
-# remove existing output from this step
-rm ${study}.${subj}.anat.seg.fsl+orig*
+#rm ${study}.${subj}.anat.seg.fsl+orig*
 
 3dcalc \
 -datum short \
@@ -170,17 +157,15 @@ rm ${study}.${subj}.anat.seg.fsl+orig*
 -expr a \
 -prefix ${study}.${subj}.anat.seg.fsl
 
-# remove intermediates
-rm -v ${study}.${subj}.anat.seg.float+orig*
-rm -v ${study}.${subj}.anat.sksp.nii
-rm -v ${study}.${subj}.anat_seg.nii
+#rm -v ${study}.${subj}.anat.seg.float+orig*
+#rm -v ${study}.${subj}.anat.sksp.nii
+#rm -v ${study}.${subj}.anat_seg.nii
 
 echo "****************************************************************"
 echo " AFNI | Warp segmented anatomy into MNI space"
 echo "****************************************************************"
 
-# remove existing output from this step
-rm ${study}.${subj}.anat.seg.fsl.MNI+tlrc*
+#rm ${study}.${subj}.anat.seg.fsl.MNI+tlrc*
 
 @auto_tlrc \
 -apar ${study}.${subj}.anat.sksp_MNI+tlrc \

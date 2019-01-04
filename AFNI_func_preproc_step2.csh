@@ -62,7 +62,7 @@ set do_epi = 'yes'
 
 #set subjects = ($SUBJECT_LIST)
 #foreach SUBJECT ( `cat $subjects` )
-set subjects = (test_001)
+set subjects = (test_002)
 
 foreach subj ($subjects)
 

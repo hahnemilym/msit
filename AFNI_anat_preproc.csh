@@ -37,7 +37,7 @@ set do_anat = 'yes'
 
 #set subjects = ($SUBJECT_LIST)
 #foreach SUBJECT ( `cat $subjects` )
-set subjects = (test_001)
+set subjects = (test_002)
 
 foreach subj ($subjects)
 
@@ -49,10 +49,10 @@ if ( ${do_anat} == 'yes' ) then
 
 setenv DATA_DIR $SUBJECTS_DIR/${subj}/${task}
 
-cd $DATA_DIR/anat
+cd ${DATA_DIR}/anat
 
 echo "****************************************************************"
-echo " AFNI | Skull stripping - Round 1
+echo " AFNI | Skull stripping - Round 1 "
 echo "****************************************************************"
 
 #rm ${study}.${subj}.anat.sksp+orig*

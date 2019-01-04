@@ -2,10 +2,8 @@
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # To-do:
-# 1. Find GSR step, remove GSR
-# 2. Review motion corr .m script
-# 3. Review 'rm' steps to orig script, while keeping in mind orig dir struct
-# 4. Siemens interleaved slice pattern ??
+# 1. Siemens interleaved slice pattern ??
+# ---> mimick general_multiband_slicetime.m
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -64,7 +62,7 @@ set do_epi = 'yes'
 
 #set subjects = ($SUBJECT_LIST)
 #foreach SUBJECT ( `cat $subjects` )
-set subjects = (test_001)
+set subjects = (test_002)
 
 foreach subj ($subjects)
 

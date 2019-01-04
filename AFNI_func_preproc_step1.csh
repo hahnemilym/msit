@@ -68,8 +68,7 @@ set subjects = (test_001)
 
 foreach subj ($subjects)
 
-cd $SUBJECTS_DIR/${subj}/${task}
-set activeSubjectdirectory = `pwd`
+setenv DATA_DIR $SUBJECTS_DIR/${subj}/${task}
 
 echo "****************************************************************"
 echo " AFNI | Functional preprocessing | PART 1"
@@ -77,13 +76,16 @@ echo "****************************************************************"
 
 if ( ${do_epi} == 'yes' ) then
 
-cd $activeSubjectdirectory/func
+cd ${DATA_DIR}/func
 
 #echo "****************************************************************"
 #echo " AFNI | AFNI to NIFTI "
 #echo "****************************************************************"
 
-#3dAFNItoNIFTI -prefix $activeSubjectdirectory/${study}.${subj}.${task}.nii $activeSubjectdirectory/func/concat_${study}.${subj}.${task}.+orig
+# This step useless. You're welcome
+
+#3dAFNItoNIFTI -prefix $activeSubjectdirectory/${study}.${subj}.${task}.nii \
+#$activeSubjectdirectory/func/concat_${study}.${subj}.${task}.+orig
 
 #echo "****************************************************************"
 #echo " AFNI | Despiking"
@@ -91,10 +93,10 @@ cd $activeSubjectdirectory/func
 
 #rm ${study}.${subj}.${task}.DSPK*
 
-#3dDespike \
-#-overwrite \
-#-prefix ${study}.${subj}.${task}.DSPK \
-#${study}.${subj}.${task}.nii
+3dDespike \
+-overwrite \
+-prefix ${study}.${subj}.${task}.DSPK \
+${study}.${subj}.${task}.nii
 
 #rm ${study}.${subj}.${task}.nii
 
@@ -104,13 +106,13 @@ cd $activeSubjectdirectory/func
 
 #rm ${study}.${subj}.${task}.tshft+orig*
 
-#3dTshift \
-#-ignore 1 \
-#-tzero 0 \
-#-TR ${TR} \
-#-tpattern ${slice_pattern} \
-#-prefix ${study}.${subj}.${task}.tshft \
-#${study}.${subj}.${task}.DSPK+orig
+3dTshift \
+-ignore 1 \
+-tzero 0 \
+-TR ${TR} \
+-tpattern ${slice_pattern} \
+-prefix ${study}.${subj}.${task}.tshft \
+${study}.${subj}.${task}.DSPK+orig
 
 #rm ${study}.${subj}.${task}.DSPK+orig*
 
@@ -120,10 +122,10 @@ cd $activeSubjectdirectory/func
 
 #rm ${study}.${subj}.${task}.deoblique+orig*
 
-#3dWarp \
-#-deoblique \
-#-prefix ${study}.${subj}.${task}.deoblique \
-#${study}.${subj}.${task}.tshft+orig
+3dWarp \
+-deoblique \
+-prefix ${study}.${subj}.${task}.deoblique \
+${study}.${subj}.${task}.tshft+orig
 
 #rm ${study}.${subj}.${task}.tshft+orig*
 
@@ -133,13 +135,13 @@ cd $activeSubjectdirectory/func
 
 #rm ${study}.${subj}.${task}.motion+orig*
 
-#3dvolreg \
-#-verbose \
-#-zpad 1 \
-#-base ${study}.${subj}.${task}.deoblique+orig'[10]' \
-#-1Dfile ${study}.${subj}.${task}.motion.1D \
-#-prefix ${study}.${subj}.${task}.motion \
-#${study}.${subj}.${task}.deoblique+orig
+3dvolreg \
+-verbose \
+-zpad 1 \
+-base ${study}.${subj}.${task}.deoblique+orig'[10]' \
+-1Dfile ${study}.${subj}.${task}.motion.1D \
+-prefix ${study}.${subj}.${task}.motion \
+${study}.${subj}.${task}.deoblique+orig
 
 #rm ${study}.${subj}.${task}.deoblique+orig*
 

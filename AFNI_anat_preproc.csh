@@ -67,7 +67,7 @@ echo "****************************************************************"
 echo " AFNI | Skull stripping - Round 2 (to ensure accuracy) "
 echo "****************************************************************"
 
-#rm ${study}.${subj}.anat.sksp1+orig*
+rm ${study}.${subj}.anat.sksp1+orig*
 
 3dSkullStrip \
 -input ${study}.${subj}.anat.sksp+orig \
@@ -75,7 +75,7 @@ echo "****************************************************************"
 -orig_vol \
 -niter 300
 
-#rm ${study}.${subj}.anat.sksp+orig*
+rm ${study}.${subj}.anat.sksp+orig*
 
 echo "****************************************************************"
 echo " AFNI | 3dcopy "
@@ -85,10 +85,10 @@ echo "****************************************************************"
 ${study}.${subj}.anat.sksp1+orig \
 ${study}.${subj}.anat.sksp
 
-#rm ${study}.${subj}.anat.sksp1+orig*
+rm ${study}.${subj}.anat.sksp1+orig*
 
 echo "****************************************************************"
-echo " AFNI | @auto_tlrc
+echo " AFNI | @auto_tlrc "
 echo "****************************************************************"
 
 #rm ${study}.${subj}.anat.sksp_MNI+tlrc*
@@ -145,9 +145,10 @@ ${study}.${subj}.anat.seg.float
 -'anat' ${study}.${subj}.anat.seg.float+orig
 
 echo "****************************************************************"
-echo " AFNI | Convert the data type from float to short
-echo " Note: FSL stamp is applied
+echo " AFNI | Convert the data type from float to short "
 echo "****************************************************************"
+
+# Note: FSL stamp is applied
 
 #rm ${study}.${subj}.anat.seg.fsl+orig*
 
@@ -162,7 +163,7 @@ echo "****************************************************************"
 #rm -v ${study}.${subj}.anat_seg.nii
 
 echo "****************************************************************"
-echo " AFNI | Warp segmented anatomy into MNI space"
+echo " AFNI | Warp segmented anatomy into MNI space "
 echo "****************************************************************"
 
 #rm ${study}.${subj}.anat.seg.fsl.MNI+tlrc*

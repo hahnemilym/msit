@@ -143,17 +143,6 @@ ${study}.${subj}.${task}.deoblique+orig
 
 #rm ${study}.${subj}.${task}.deoblique+orig*
 
-#echo "****************************************************************"
-#echo " AFNI | Generate Motion Regressors "
-#echo "****************************************************************"
-#
-#echo "TO RUN [Generate Motion Regressors] STEP:"
-#echo "1. OPEN: make_motion_regressors.m and add INDIVIDUAL subject to subjects loop"
-#echo '2. TYPE: >> matlab -nodesktop -nosplash -r "make_motion_regressors;exit" '
-#echo '3. PROCEED to AFNI_func_preproc_step2.csh'
-#
-##matlab -nodesktop -nosplash -r "make_motion_regressors;exit"
-
 echo "****************************************************************"
 echo " DONE"
 echo "****************************************************************"
@@ -168,4 +157,3 @@ end
 # return to project scripts
 cd $ANALYSIS_DIR
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-

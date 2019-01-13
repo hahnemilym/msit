@@ -77,8 +77,8 @@ echo " AFNI | 3dAFNItoNIFTI "
 echo "*******************************************************************************"
 
 3dAFNItoNIFTI \
--prefix ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.resid+tlrc.nii \
-${DATA_DIR}/func/${study}.${SUBJECT}.${task}.resid+tlrc
+-prefix ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.smooth.resid+tlrc.nii \
+${DATA_DIR}/func/${study}.${SUBJECT}.${task}.smooth.resid+tlrc
 
 #echo "*******************************************************************************"
 #echo " AFNI | 3dDeconvolve task "
@@ -86,7 +86,7 @@ ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.resid+tlrc
 #
 #3dDeconvolve \
 #-force_TR $TR \
-#-input ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.resid+tlrc.nii \
+#-input ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.smooth.resid+tlrc.nii \
 #-nfirst 0 \
 #-censor ${DATA_DIR}/func/censor_file \
 #-polort $polort \
@@ -103,7 +103,7 @@ ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.resid+tlrc
 #echo "*******************************************************************************"
 #
 #3dLSS \
-#-input ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.resid+tlrc.nii \
+#-input ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.smooth.resid+tlrc.nii \
 #-matrix ${DATA_DIR}/bsm/LSS.xmat.1D \
 #-prefix ${DATA_DIR}/bsm/LSS.${SUBJECT}.nii
 #

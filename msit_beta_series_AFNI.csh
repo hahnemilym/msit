@@ -66,29 +66,30 @@ echo "**************************************************************************
 echo " AFNI | 1dtranspose 1D censor data "
 echo "*******************************************************************************"
 
-#rm censor_file
+rm ${DATA_DIR}/func/censor_file
+${DATA_DIR}/func/func_t
 
-1dtranspose ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.censor.1D > ${DATA_DIR}/func/func_t
+1dtranspose ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.censor.1D > ${DATA_DIR}/bsm/func_t
 
-1dtranspose ${DATA_DIR}/func/func_t > ${DATA_DIR}/func/censor_file
+1dtranspose ${DATA_DIR}/bsm/func_t > ${DATA_DIR}/bsm/censor_file
 
 echo "*******************************************************************************"
 echo " AFNI | 3dAFNItoNIFTI "
 echo "*******************************************************************************"
 
 3dAFNItoNIFTI \
--prefix ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.smooth.resid+tlrc.nii \
+-prefix ${DATA_DIR}/bsm/${study}.${SUBJECT}.${task}.smooth.resid+tlrc.nii \
 ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.smooth.resid+tlrc
 
-#echo "*******************************************************************************"
-#echo " AFNI | 3dDeconvolve task "
-#echo "*******************************************************************************"
-#
+echo "*******************************************************************************"
+echo " AFNI | 3dDeconvolve task "
+echo "*******************************************************************************"
+
 #3dDeconvolve \
 #-force_TR $TR \
-#-input ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.smooth.resid+tlrc.nii \
+#-input ${DATA_DIR}/bsm/${study}.${SUBJECT}.${task}.smooth.resid+tlrc.nii \
 #-nfirst 0 \
-#-censor ${DATA_DIR}/func/censor_file \
+#-censor ${DATA_DIR}/bsm/censor_file \
 #-polort $polort \
 #-num_stimts $num_stimts \
 #-stim_times_IM 1 ${DATA_DIR}/bsm/${stim_txt_file} "BLOCK(1,1)" \
@@ -97,13 +98,13 @@ ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.smooth.resid+tlrc
 #-allzero_OK \
 #-nobucket \
 #-x1D_stop
-#
+
 #echo "*******************************************************************************"
 #echo " AFNI | 3dLSS "
 #echo "*******************************************************************************"
 #
 #3dLSS \
-#-input ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.smooth.resid+tlrc.nii \
+#-input ${DATA_DIR}/bsm/${study}.${SUBJECT}.${task}.smooth.resid+tlrc.nii \
 #-matrix ${DATA_DIR}/bsm/LSS.xmat.1D \
 #-prefix ${DATA_DIR}/bsm/LSS.${SUBJECT}.nii
 #

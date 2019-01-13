@@ -52,7 +52,7 @@ set task = (${study}_bsm)
 set subjects = test_002
 foreach SUBJECT ($subjects)
 
-setenv DATA_DIR = ${SUBJECTS_DIR}/${SUBJECT}/${task}
+setenv DATA_DIR ${SUBJECTS_DIR}/${SUBJECT}/${task}
 cd $DATA_DIR
 
 echo "*******************************************************************************"

@@ -80,9 +80,8 @@ cd ${DATA_DIR}/func
 #echo " AFNI | AFNI to NIFTI "
 #echo "****************************************************************"
 
-# This step useless. You're welcome
-
-#3dAFNItoNIFTI -prefix $activeSubjectdirectory/${study}.${subj}.${task}.nii \
+#3dAFNItoNIFTI \
+#-prefix $activeSubjectdirectory/${study}.${subj}.${task}.nii \
 #$activeSubjectdirectory/func/concat_${study}.${subj}.${task}.+orig
 
 #echo "****************************************************************"

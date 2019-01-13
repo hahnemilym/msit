@@ -79,17 +79,17 @@ echo "****************************************************************"
 echo " AFNI | Warp Functional (EPI) to Structural (MEMPRAGE) Space "
 echo "****************************************************************"
 
-cp $DATA_DIR/anat/*sksp* ${DATA_DIR}/func
+#cp $DATA_DIR/anat/*sksp* ${DATA_DIR}/func
 
 #rm ${study}.${subj}.${task}.motion_shft+orig*
 
 align_epi_anat.py \
--anat ${study}.${subj}.anat.sksp+orig \
+-anat ${DATA_DIR}/anat/${study}.${subj}.anat.sksp+orig \
 -epi ${study}.${subj}.${task}.motion+orig \
 -epi_base 6 \
 -epi2anat \
 -suffix _py \
--tlrc_apar ${study}.${subj}.anat.sksp_MNI+tlrc \
+-tlrc_apar ${DATA_DIR}/anat/${study}.${subj}.anat.sksp_MNI+tlrc \
 -anat_has_skull no \
 -volreg off \
 -tshift off \

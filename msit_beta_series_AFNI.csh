@@ -11,8 +11,6 @@
 # I. Set up environment
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-source /usr/local/freesurfer/nmr-stable60-env
-
 # Local Directory
 setenv MSIT_DIR /Users/emilyhahn/projects/msit/
 
@@ -26,7 +24,7 @@ setenv PARAMS_DIR ${MSIT_DIR}/bsm_params
 setenv ANALYSIS_DIR ${MSIT_DIR}/scripts
 
 # SUBJECT_LIST Directory
-setenv SUBJECT_LIST ${PARAMS_DIR}/subjects_list_01-11-19.txt
+#setenv SUBJECT_LIST ${PARAMS_DIR}/subjects_list_01-11-19.txt
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # II. Define parameters.

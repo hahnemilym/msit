@@ -81,33 +81,33 @@ echo "**************************************************************************
 #-prefix ${DATA_DIR}/bsm/${study}.${SUBJECT}.${task}.smooth.resid+tlrc.nii \
 #${DATA_DIR}/func/${study}.${SUBJECT}.${task}.smooth.resid+tlrc
 
-echo "*******************************************************************************"
-echo " AFNI | 3dDeconvolve task "
-echo "*******************************************************************************"
-
-3dDeconvolve \
--force_TR $TR \
--input ${DATA_DIR}/bsm/${study}.${SUBJECT}.${task}.smooth.resid+tlrc.nii \
--nfirst 0 \
--censor ${DATA_DIR}/bsm/censor_file \
--polort $polort \
--num_stimts $num_stimts \
--stim_times_IM 1 ${DATA_DIR}/bsm/${stim_txt_file} "BLOCK(1,1)" \
--stim_label 1 stim_times_IM_label \
--x1D ${DATA_DIR}/bsm/LSS.xmat.1D \
--allzero_OK \
--nobucket \
--x1D_stop
-
 #echo "*******************************************************************************"
-#echo " AFNI | 3dLSS "
+#echo " AFNI | 3dDeconvolve task "
 #echo "*******************************************************************************"
 #
-#3dLSS \
+#3dDeconvolve \
+#-force_TR $TR \
 #-input ${DATA_DIR}/bsm/${study}.${SUBJECT}.${task}.smooth.resid+tlrc.nii \
-#-matrix ${DATA_DIR}/bsm/LSS.xmat.1D \
-#-prefix ${DATA_DIR}/bsm/LSS.${SUBJECT}.nii
-#
+#-nfirst 0 \
+#-censor ${DATA_DIR}/bsm/censor_file \
+#-polort $polort \
+#-num_stimts $num_stimts \
+#-stim_times_IM 1 ${DATA_DIR}/bsm/${stim_txt_file} "BLOCK(1,1)" \
+#-stim_label 1 stim_times_IM_label \
+#-x1D ${DATA_DIR}/bsm/LSS.xmat.1D \
+#-allzero_OK \
+#-nobucket \
+#-x1D_stop
+
+echo "*******************************************************************************"
+echo " AFNI | 3dLSS "
+echo "*******************************************************************************"
+
+3dLSS \
+-input ${DATA_DIR}/bsm/${study}.${SUBJECT}.${task}.smooth.resid+tlrc.nii \
+-matrix ${DATA_DIR}/bsm/LSS.xmat.1D \
+-prefix ${DATA_DIR}/bsm/LSS.${SUBJECT}.nii
+
 #echo "*******************************************************************************"
 #echo " AFNI | 3dDespike "
 #echo "*******************************************************************************"

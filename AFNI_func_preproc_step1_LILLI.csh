@@ -26,7 +26,7 @@ setenv PARAMS_DIR $MSIT_DIR/bsm_params/
 setenv ANALYSIS_DIR $MSIT_DIR/scripts
 
 # Subjects List
-#setenv SUBJECT_LIST $PARAMS_DIR/subjects_list_mmddyy.txt
+setenv SUBJECT_LIST $PARAMS_DIR/subjects_list_01-10-19.txt
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Define parameters
@@ -60,11 +60,11 @@ set do_epi = 'yes'
 # Initialize subject(s) environment
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-#set subjects = ($SUBJECT_LIST)
-#foreach SUBJECT ( `cat $subjects` )
-set subjects = (hc001)
+set subjects = ($SUBJECT_LIST)
+foreach subj ( `cat $subjects` )
 
-foreach subj ($subjects)
+#set subjects = (hc001)
+#foreach subj ($subjects)
 
 setenv DATA_DIR $SUBJECTS_DIR/${subj}/${task}
 
@@ -88,14 +88,14 @@ echo "****************************************************************"
 echo " AFNI | Despiking (assumes spm mbst has been run)"
 echo "****************************************************************"
 
-#rm ${study}.${subj}.${task}.DSPK*
+rm ${study}.${subj}.${task}.DSPK*
 
 3dDespike \
 -overwrite \
 -prefix ${study}.${subj}.${task}.DSPK \
 a${study}.${subj}.${task}.nii
 
-#rm ${study}.${subj}.${task}.nii
+rm ${study}.${subj}.${task}.nii
 
 #echo "****************************************************************"
 #echo " AFNI | 3dTshift "
@@ -117,20 +117,20 @@ echo "****************************************************************"
 echo " AFNI | Deobliquing "
 echo "****************************************************************"
 
-#rm ${study}.${subj}.${task}.deoblique+orig*
+rm ${study}.${subj}.${task}.deoblique+orig*
 
 3dWarp \
 -deoblique \
 -prefix ${study}.${subj}.${task}.deoblique \
 ${study}.${subj}.${task}.DSPK+tlrc
 
-#rm ${study}.${subj}.${task}.DSPK+orig*
+rm ${study}.${subj}.${task}.DSPK+orig*
 
 echo "****************************************************************"
 echo " AFNI | Motion Correction "
 echo "****************************************************************"
 
-#rm ${study}.${subj}.${task}.motion+orig*
+rm ${study}.${subj}.${task}.motion+orig*
 
 3dvolreg \
 -verbose \
@@ -140,7 +140,7 @@ echo "****************************************************************"
 -prefix ${study}.${subj}.${task}.motion \
 ${study}.${subj}.${task}.deoblique+tlrc
 
-#rm ${study}.${subj}.${task}.deoblique+orig*
+rm ${study}.${subj}.${task}.deoblique+orig*
 
 echo "****************************************************************"
 echo " DONE"

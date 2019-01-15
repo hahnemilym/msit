@@ -17,10 +17,10 @@ setenv SUBJECTS_DIR $MSIT_DIR/subjs
 setenv PARAMS_DIR $MSIT_DIR/bsm_params/
 
 # Analyses Directory
-setenv ANALYSIS_DIR $MSIT_DIR/scripts
+setenv ANALYSIS_DIR $MSIT_DIR/msit
 
 # Subjects List
-#setenv SUBJECT_LIST $PARAMS_DIR/subjects_list_mmddyy.txt
+setenv SUBJECT_LIST $PARAMS_DIR/subjects_list_01-10-19.txt
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Define parameters
@@ -35,12 +35,11 @@ set do_anat = 'yes'
 # Initialize subject(s) environment
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-#set subjects = ($SUBJECT_LIST)
-#foreach SUBJECT ( `cat $subjects` )
+set subjects = ($SUBJECT_LIST)
+foreach SUBJECT ( `cat $subjects` )
 
-set subjects = (hc001)
-
-foreach subj ($subjects)
+#set subjects = (hc001)
+#foreach subj ($subjects)
 
 echo "****************************************************************"
 echo " AFNI | Anatomical preprocessing "
@@ -56,7 +55,7 @@ echo "****************************************************************"
 echo " AFNI | Skull stripping - Round 1 "
 echo "****************************************************************"
 
-#rm ${study}.${subj}.anat.sksp+orig*
+rm ${study}.${subj}.anat.sksp+orig*
 
 3dSkullStrip \
 -input ${study}.${subj}.anat.nii \
@@ -68,7 +67,7 @@ echo "****************************************************************"
 echo " AFNI | Skull stripping - Round 2 (to ensure accuracy) "
 echo "****************************************************************"
 
-#rm ${study}.${subj}.anat.sksp1+orig*
+rm ${study}.${subj}.anat.sksp1+orig*
 
 3dSkullStrip \
 -input ${study}.${subj}.anat.sksp+orig \
@@ -92,8 +91,8 @@ echo "****************************************************************"
 echo " AFNI | @auto_tlrc "
 echo "****************************************************************"
 
-#rm ${study}.${subj}.anat.sksp_MNI+tlrc*
-#rm ${study}.${subj}.anat.mask*
+rm ${study}.${subj}.anat.sksp_MNI+tlrc*
+rm ${study}.${subj}.anat.mask*
 
 @auto_tlrc \
 -no_ss \
@@ -114,8 +113,8 @@ echo "****************************************************************"
 echo " AFNI | Configure FSL segmentation "
 echo "****************************************************************"
 
-#rm ${study}.${subj}.anat.sksp.nii*
-#rm ${study}.${subj}.anat_seg.nii.gz
+rm ${study}.${subj}.anat.sksp.nii*
+rm ${study}.${subj}.anat_seg.nii.gz
 
 3dresample \
 -orient ASR \
@@ -136,7 +135,7 @@ echo "****************************************************************"
 
 # NOTE: order of the following commands is important
 
-#rm ${study}.${subj}.anat.seg.float+orig*
+rm ${study}.${subj}.anat.seg.float+orig*
 
 gunzip ${study}.${subj}.anat_seg.nii.gz
 
@@ -153,7 +152,7 @@ echo "****************************************************************"
 
 # Note: FSL stamp is applied
 
-#rm ${study}.${subj}.anat.seg.fsl+orig*
+rm ${study}.${subj}.anat.seg.fsl+orig*
 
 3dcalc \
 -datum short \
@@ -169,7 +168,7 @@ echo "****************************************************************"
 echo " AFNI | Warp segmented anatomy into MNI space "
 echo "****************************************************************"
 
-#rm ${study}.${subj}.anat.seg.fsl.MNI+tlrc*
+rm ${study}.${subj}.anat.seg.fsl.MNI+tlrc*
 
 @auto_tlrc \
 -apar ${study}.${subj}.anat.sksp_MNI+tlrc \

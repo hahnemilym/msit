@@ -12,7 +12,7 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 # Local Directory
-setenv MSIT_DIR /autofs/space/lilli_004/users/DARPA-MSIT
+setenv MSIT_DIR /autofs/space/lilli_004/users/DARPA-MSIT/msit
 
 # Subjects Directory
 setenv SUBJECTS_DIR ${MSIT_DIR}/subjs
@@ -24,7 +24,7 @@ setenv PARAMS_DIR ${MSIT_DIR}/bsm_params
 setenv ANALYSIS_DIR ${MSIT_DIR}/scripts
 
 # SUBJECT_LIST Directory
-#setenv SUBJECT_LIST ${PARAMS_DIR}/subjects_list_01-11-19.txt
+#setenv SUBJECT_LIST ${PARAMS_DIR}/subjects_list_01-10-19.txt
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # II. Define parameters.
@@ -34,7 +34,7 @@ set TR = 1.75
 set polort = A
 # A = set polynomial order (detrending param) automatically
 
-set stim_txt_file = msit_bsm_stim.csv
+set stim_txt_file = $MSIT_DIR/msit/params/msit_bsm_stim.csv
 set num_stimts = 1
 # E.G. num_stimts = 3; includes shock, rating, CS_presentation.
 # Change this param and to = 2 if comparing C, I conditions seprately. Also stim_times_IM and stim_label
@@ -49,7 +49,7 @@ set task = (${study}_bsm)
 #set subjects = ($SUBJECT_LIST)
 #foreach SUBJECT ( `cat $subjects` )
 
-set subjects = test_002
+set subjects = hc001
 foreach SUBJECT ($subjects)
 
 setenv DATA_DIR ${SUBJECTS_DIR}/${SUBJECT}/${task}
@@ -92,7 +92,7 @@ echo "**************************************************************************
 -censor ${DATA_DIR}/bsm/censor_file \
 -polort $polort \
 -num_stimts $num_stimts \
--stim_times_IM 1 ${DATA_DIR}/bsm/${stim_txt_file} "BLOCK(1,1)" \
+-stim_times_IM 1 ${stim_txt_file} "BLOCK(1,1)" \
 -stim_label 1 stim_times_IM_label \
 -x1D ${DATA_DIR}/bsm/LSS.xmat.1D \
 -allzero_OK \

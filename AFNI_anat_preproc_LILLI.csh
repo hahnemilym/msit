@@ -36,7 +36,7 @@ set do_anat = 'yes'
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 set subjects = ($SUBJECT_LIST)
-foreach SUBJECT ( `cat $subjects` )
+foreach subj ( `cat $subjects` )
 
 #set subjects = (hc001)
 #foreach subj ($subjects)

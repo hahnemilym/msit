@@ -56,7 +56,7 @@ echo "****************************************************************"
 echo " AFNI | Skull stripping - Round 1 "
 echo "****************************************************************"
 
-rm ${study}.${subj}.anat.sksp+orig*
+#rm ${study}.${subj}.anat.sksp+orig*
 
 3dSkullStrip \
 -input ${study}.${subj}.anat.nii \
@@ -68,7 +68,7 @@ echo "****************************************************************"
 echo " AFNI | Skull stripping - Round 2 (to ensure accuracy) "
 echo "****************************************************************"
 
-rm ${study}.${subj}.anat.sksp1+orig*
+#rm ${study}.${subj}.anat.sksp1+orig*
 
 3dSkullStrip \
 -input ${study}.${subj}.anat.sksp+orig \
@@ -92,8 +92,8 @@ echo "****************************************************************"
 echo " AFNI | @auto_tlrc "
 echo "****************************************************************"
 
-rm ${study}.${subj}.anat.sksp_MNI+tlrc*
-rm ${study}.${subj}.anat.mask*
+#rm ${study}.${subj}.anat.sksp_MNI+tlrc*
+#rm ${study}.${subj}.anat.mask*
 
 @auto_tlrc \
 -no_ss \
@@ -114,8 +114,8 @@ echo "****************************************************************"
 echo " AFNI | Configure FSL segmentation "
 echo "****************************************************************"
 
-rm ${study}.${subj}.anat.sksp.nii*
-rm ${study}.${subj}.anat_seg.nii.gz
+#rm ${study}.${subj}.anat.sksp.nii*
+#rm ${study}.${subj}.anat_seg.nii.gz
 
 3dresample \
 -orient ASR \
@@ -126,6 +126,8 @@ echo "****************************************************************"
 echo " FSL | Segmentation: GM WM CSF "
 echo "****************************************************************"
 
+source /usr/local/freesurfer/nmr-stable60-env
+
 fast -t 1 -n 3 -H .5 -B -b --nopve -o ${study}.${subj}.anat ${study}.${subj}.anat.sksp.nii
 
 echo "****************************************************************"
@@ -134,7 +136,7 @@ echo "****************************************************************"
 
 # NOTE: order of the following commands is important
 
-rm ${study}.${subj}.anat.seg.float+orig*
+#rm ${study}.${subj}.anat.seg.float+orig*
 
 gunzip ${study}.${subj}.anat_seg.nii.gz
 
@@ -151,7 +153,7 @@ echo "****************************************************************"
 
 # Note: FSL stamp is applied
 
-rm ${study}.${subj}.anat.seg.fsl+orig*
+#rm ${study}.${subj}.anat.seg.fsl+orig*
 
 3dcalc \
 -datum short \
@@ -167,7 +169,7 @@ echo "****************************************************************"
 echo " AFNI | Warp segmented anatomy into MNI space "
 echo "****************************************************************"
 
-rm ${study}.${subj}.anat.seg.fsl.MNI+tlrc*
+#rm ${study}.${subj}.anat.seg.fsl.MNI+tlrc*
 
 @auto_tlrc \
 -apar ${study}.${subj}.anat.sksp_MNI+tlrc \

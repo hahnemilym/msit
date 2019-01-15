@@ -12,7 +12,7 @@
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
 # Local Directory
-setenv MSIT_DIR /Users/emilyhahn/projects/msit/
+setenv MSIT_DIR /autofs/space/lilli_004/users/DARPA-MSIT
 
 # Subjects Directory
 setenv SUBJECTS_DIR ${MSIT_DIR}/subjs

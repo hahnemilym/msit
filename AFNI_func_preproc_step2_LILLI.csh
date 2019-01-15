@@ -35,7 +35,7 @@ setenv ANALYSIS_DIR $MSIT_DIR/scripts
 # formerly 'seq+z'. Here, slices interleaved and odd...
 #set slice_pattern = 'FROM_IMAGE'
 #set slice_pattern = '@filename'
-set slice_pattern = 'alt+z'
+#set slice_pattern = 'alt+z'
 
 # number of regressors [WM, CSF, motion]
 set num_stimts = 28
@@ -82,8 +82,9 @@ echo "****************************************************************"
 rm ${study}.${subj}.${task}.motion_shft+orig*
 
 align_epi_anat.py \
--anat ${DATA_DIR}/anat/${study}.${subj}.anat.sksp+orig \
--epi ${study}.${subj}.${task}.motion+orig \
+#-anat ${DATA_DIR}/anat/${study}.${subj}.anat.sksp+orig \
+-anat ${DATA_DIR}/anat/brain.finalsurfs.nii \
+-epi ${study}.${subj}.${task}.motion+tlrc \
 -epi_base 6 \
 -epi2anat \
 -suffix _py \
@@ -92,11 +93,16 @@ align_epi_anat.py \
 -volreg off \
 -tshift off \
 -deoblique off \
--giant_move
+-giant_move \
+-epi_strip 3dAutomask
 
 echo "****************************************************************"
 echo " AFNI | Normalise Coregistered Data"
 echo "****************************************************************"
+
+rm ${study}.${subj}.${task}.mean*
+rm ${study}.${subj}.${task}.stdev_no_smooth*
+rm ${study}.${subj}.${task}.tSNR_no_smooth*
 
 3dTstat \
 -prefix ${study}.${subj}.${task}.mean \

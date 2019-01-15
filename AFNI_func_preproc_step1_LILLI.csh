@@ -34,7 +34,7 @@ setenv ANALYSIS_DIR $MSIT_DIR/scripts
 
 # formerly 'seq+z'. Here, slices interleaved and odd...
 #set slice_pattern = 'FROM_IMAGE'
-set slice_pattern = 'alt+z'
+#set slice_pattern = 'alt+z'
 #set slice_pattern = '@filename'
 
 # number of regressors [WM, CSF, motion]
@@ -80,67 +80,67 @@ cd ${DATA_DIR}/func
 #echo " AFNI | AFNI to NIFTI "
 #echo "****************************************************************"
 
-3dAFNItoNIFTI \
--prefix $activeSubjectdirectory/${study}.${subj}.${task}.nii \
-$activeSubjectdirectory/func/concat_${study}.${subj}.${task}.+orig
+#3dAFNItoNIFTI \
+#-prefix ${DATA_DIR}/func/${study}.${subj}.${task}.nii \
+#${DATA_DIR}/func/${study}.${subj}.${task}
 
-#echo "****************************************************************"
-#echo " AFNI | Despiking"
-#echo "****************************************************************"
+echo "****************************************************************"
+echo " AFNI | Despiking (assumes spm mbst has been run)"
+echo "****************************************************************"
 
-rm ${study}.${subj}.${task}.DSPK*
+#rm ${study}.${subj}.${task}.DSPK*
 
 3dDespike \
 -overwrite \
 -prefix ${study}.${subj}.${task}.DSPK \
-${study}.${subj}.${task}.nii
+a${study}.${subj}.${task}.nii
 
-rm ${study}.${subj}.${task}.nii
+#rm ${study}.${subj}.${task}.nii
 
 #echo "****************************************************************"
 #echo " AFNI | 3dTshift "
 #echo "****************************************************************"
 
-rm ${study}.${subj}.${task}.tshft+orig*
+#rm ${study}.${subj}.${task}.tshft+orig*
 
-3dTshift \
--ignore 1 \
--tzero 0 \
--TR ${TR} \
--tpattern ${slice_pattern} \
--prefix ${study}.${subj}.${task}.tshft \
-${study}.${subj}.${task}.DSPK+orig
+#3dTshift \
+#-ignore 1 \
+#-tzero 0 \
+#-TR ${TR} \
+#-tpattern ${slice_pattern} \
+#-prefix ${study}.${subj}.${task}.tshft \
+#${study}.${subj}.${task}.DSPK+orig
 
-rm ${study}.${subj}.${task}.DSPK+orig*
+#rm ${study}.${subj}.${task}.DSPK+orig*
 
-#echo "****************************************************************"
-#echo " AFNI | Deobliquing "
-#echo "****************************************************************"
+echo "****************************************************************"
+echo " AFNI | Deobliquing "
+echo "****************************************************************"
 
-rm ${study}.${subj}.${task}.deoblique+orig*
+#rm ${study}.${subj}.${task}.deoblique+orig*
 
 3dWarp \
 -deoblique \
 -prefix ${study}.${subj}.${task}.deoblique \
-${study}.${subj}.${task}.tshft+orig
+${study}.${subj}.${task}.DSPK+tlrc
 
-rm ${study}.${subj}.${task}.tshft+orig*
+#rm ${study}.${subj}.${task}.DSPK+orig*
 
-#echo "****************************************************************"
-#echo " AFNI | Motion Correction "
-#echo "****************************************************************"
+echo "****************************************************************"
+echo " AFNI | Motion Correction "
+echo "****************************************************************"
 
-rm ${study}.${subj}.${task}.motion+orig*
+#rm ${study}.${subj}.${task}.motion+orig*
 
 3dvolreg \
 -verbose \
 -zpad 1 \
--base ${study}.${subj}.${task}.deoblique+orig'[10]' \
+-base ${study}.${subj}.${task}.deoblique+tlrc'[10]' \
 -1Dfile ${study}.${subj}.${task}.motion.1D \
 -prefix ${study}.${subj}.${task}.motion \
-${study}.${subj}.${task}.deoblique+orig
+${study}.${subj}.${task}.deoblique+tlrc
 
-rm ${study}.${subj}.${task}.deoblique+orig*
+#rm ${study}.${subj}.${task}.deoblique+orig*
 
 echo "****************************************************************"
 echo " DONE"
@@ -154,5 +154,5 @@ endif
 end
 
 # return to project scripts
-cd $ANALYSIS_DIR
+cd $ANALYSIS_DIR/../msit
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#

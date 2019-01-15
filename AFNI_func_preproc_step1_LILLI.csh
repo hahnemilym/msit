@@ -93,7 +93,7 @@ rm ${study}.${subj}.${task}.DSPK*
 3dDespike \
 -overwrite \
 -prefix ${study}.${subj}.${task}.DSPK \
-a${study}.${subj}.${task}.nii
+a${study}.${subj}.func.nii
 
 rm ${study}.${subj}.${task}.nii
 

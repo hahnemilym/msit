@@ -21,7 +21,7 @@ setenv SUBJECTS_DIR ${MSIT_DIR}/subjs
 setenv PARAMS_DIR ${MSIT_DIR}/bsm_params
 
 # Analysis Directory
-setenv ANALYSIS_DIR ${MSIT_DIR}/scripts
+setenv ANALYSIS_DIR ${MSIT_DIR}/msit
 
 # SUBJECT_LIST Directory
 #setenv SUBJECT_LIST ${PARAMS_DIR}/subjects_list_01-10-19.txt

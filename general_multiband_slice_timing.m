@@ -30,45 +30,20 @@ for subIdx = 1:numSub
         for runIdx = 1:numRuns
             %% Specify TR and Task Directory.
             switch conditions{condIdx}
-                case 'arc'
-                    TR = 1750
-                    dir = '/space/lilli/2/users/DARPA-ARC';
-                case 'arc_rer'
-                    TR = 1750
-                    dir = '/space/lilli/2/users/DARPA-ARC_RER';
                 case 'msit'
                     TR = 1750
-                    dir = '/space/lilli/4/users/DARPA-MSIT';
-                case 'ecr'
-                    TR = 2000
-                    dir = '/space/lilli/4/users/DARPA-ECR';
-                case 'war'
-                    TR = 2000
-                    dir = '/space/lilli/2/users/DARPA-WAR';
-                case 'cond'
-                    TR = 2560
-                    dir = '';
-                case 'rcl'
-                    TR = 1750
-                    dir = '';
-                case 'ext'
-                    TR = 1750
-                    dir = '';
-                case 'learning'
-                    TR = 2200
-                    dir = '/space/lilli/4/users/DARPA-Learning';
+                    dir = '/space/lilli/4/users/DARPA-MSIT/msit';
             end
 
             %% Specify Run Directory.
-            if strcmp(conditions{condIdx},'arc_rer') == 1
-                run_dir = [dir filesep subjects{subIdx} filesep conditions{condIdx} '_001' num2str(runs{runIdx},'%02d') filesep '001']
-            else
-                run_dir = [dir filesep subjects{subIdx} filesep conditions{condIdx} '_001' filesep num2str(runs{runIdx},'%03d')]
-            end
+	    func_dir = 'func'
+	    analysis_dir = 'msit_bsm'
+            run_dir = [dir filesep 'subjs' filesep subjects{subIdx} filesep analysis_dir filesep func_dir]
+	    disp(run_dir)
 
             %% Select functional files.
-            msg = ['Select files for ' subjects{subIdx} ' : ' conditions{condIdx} ' : ' num2str(runs{runIdx},'%03d')]   
-            P = spm_select(Inf,'image',msg,[],run_dir,'.nii','1:1000');
+            msg = ['Select files for ' subjects{subIdx}]   
+            P = spm_select(Inf,'image',msg,[],run_dir,'func.nii','1:1000');
 
             %% Cue for TR.
     %         TR = inputdlg(['TR:','Please enter TR for ' conditions{condIdx}]);

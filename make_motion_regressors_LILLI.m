@@ -5,11 +5,11 @@ study='msit';
 dir = '/autofs/space/lilli_004/users/DARPA-MSIT/msit/subjs/';
 subdir = ['/' task '/' 'func' '/'];
 
-subjects_list={'hc001','hc002','hc003','hc004','hc005','hc006','hc007','hc008','hc009','hc010',\
-'hc011','hc012','hc013','hc014','hc015','hc017','hc018','hc019','hc020','hc021',\
-'hc022','hc023','hc024','hc025','hc026','hc028','hc029','hc030','hc031','hc032',\
-'hc033','hc034','hc035','hc036','hc037','hc038','hc041','hc042','hc044','hc045',\
-'pp001','pp002','pp003','pp004','pp005','pp006','pp007','pp008','pp009','pp010',\
+subjects_list={'hc001','hc002','hc003','hc004','hc005','hc006','hc007','hc008','hc009','hc010',...
+'hc011','hc012','hc013','hc014','hc015','hc017','hc018','hc019','hc020','hc021',...
+'hc022','hc023','hc024','hc025','hc026','hc028','hc029','hc030','hc031','hc032',...
+'hc033','hc034','hc035','hc036','hc037','hc038','hc041','hc042','hc044','hc045',...
+'pp001','pp002','pp003','pp004','pp005','pp006','pp007','pp008','pp009','pp010',...
 'pp011','pp012','pp013','pp014','pp015','pp016'};
 
 for i = 1 : length(subjects_list)

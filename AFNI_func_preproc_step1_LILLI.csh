@@ -95,7 +95,7 @@ rm ${study}.${subj}.${task}.DSPK*
 -prefix ${study}.${subj}.${task}.DSPK \
 a${study}.${subj}.func.nii
 
-rm ${study}.${subj}.${task}.nii
+#rm a${study}.${subj}.${task}.nii
 
 #echo "****************************************************************"
 #echo " AFNI | 3dTshift "
@@ -117,20 +117,20 @@ echo "****************************************************************"
 echo " AFNI | Deobliquing "
 echo "****************************************************************"
 
-rm ${study}.${subj}.${task}.deoblique+orig*
+rm ${study}.${subj}.${task}.deoblique*
 
 3dWarp \
 -deoblique \
 -prefix ${study}.${subj}.${task}.deoblique \
 ${study}.${subj}.${task}.DSPK+tlrc
 
-rm ${study}.${subj}.${task}.DSPK+orig*
+rm ${study}.${subj}.${task}.DSPK*
 
 echo "****************************************************************"
 echo " AFNI | Motion Correction "
 echo "****************************************************************"
 
-rm ${study}.${subj}.${task}.motion+orig*
+rm ${study}.${subj}.${task}.motion*
 
 3dvolreg \
 -verbose \
@@ -140,7 +140,7 @@ rm ${study}.${subj}.${task}.motion+orig*
 -prefix ${study}.${subj}.${task}.motion \
 ${study}.${subj}.${task}.deoblique+tlrc
 
-rm ${study}.${subj}.${task}.deoblique+orig*
+rm ${study}.${subj}.${task}.deoblique*
 
 echo "****************************************************************"
 echo " DONE"

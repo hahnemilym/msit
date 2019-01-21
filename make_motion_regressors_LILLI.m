@@ -60,5 +60,5 @@ for i = 1 : length(subjects_list)
     dlmwrite([dir subj '/' subdir study '.' subj '.' task '.motion_pre_t.1D'],motion_pre_t,' ');
     dlmwrite([dir subj '/' subdir study '.' subj '.' task '.motion_pre_t_square.1D'],motion_pre_t_square,' ');
     
-    disp(['DONE: ' subj])
+    disp(['Motion regressors generated: ' subj])
 end

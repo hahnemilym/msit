@@ -26,7 +26,7 @@ setenv PARAMS_DIR $MSIT_DIR/bsm_params/
 setenv ANALYSIS_DIR $MSIT_DIR/scripts
 
 # Subjects List
-#setenv SUBJECT_LIST $PARAMS_DIR/subjects_list_01-10-19.txt
+setenv SUBJECT_LIST $PARAMS_DIR/subjects_list_01-10-19.txt
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Define parameters
@@ -137,7 +137,7 @@ rm ${study}.${subj}.${task}.motion*
 -zpad 1 \
 -base ${study}.${subj}.${task}.deoblique+tlrc'[10]' \
 -1Dfile ${study}.${subj}.${task}.motion.1D \
--prefix ${study}.${subj}.${task}.motion \
+-prefix ${study}.${subj}.${task}.motion.rs \
 ${study}.${subj}.${task}.deoblique+tlrc
 
 rm ${study}.${subj}.${task}.deoblique*

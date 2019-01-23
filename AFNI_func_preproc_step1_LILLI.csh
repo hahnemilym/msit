@@ -60,11 +60,11 @@ set do_epi = 'yes'
 # Initialize subject(s) environment
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-#set subjects = ($SUBJECT_LIST)
-#foreach subj ( `cat $subjects` )
+set subjects = ($SUBJECT_LIST)
+foreach subj ( `cat $subjects` )
 
-set subjects = (hc001)
-foreach subj ($subjects)
+#set subjects = (hc001)
+#foreach subj ($subjects)
 
 setenv DATA_DIR $SUBJECTS_DIR/${subj}/${task}
 
@@ -88,7 +88,7 @@ echo "****************************************************************"
 echo " AFNI | Despiking (assumes spm mbst has been run)"
 echo "****************************************************************"
 
-rm ${study}.${subj}.${task}.DSPK*
+#rm ${study}.${subj}.${task}.DSPK*
 
 3dDespike \
 -overwrite \
@@ -117,20 +117,20 @@ echo "****************************************************************"
 echo " AFNI | Deobliquing "
 echo "****************************************************************"
 
-rm ${study}.${subj}.${task}.deoblique*
+#rm ${study}.${subj}.${task}.deoblique*
 
 3dWarp \
 -deoblique \
 -prefix ${study}.${subj}.${task}.deoblique \
 ${study}.${subj}.${task}.DSPK+tlrc
 
-rm ${study}.${subj}.${task}.DSPK*
+#rm ${study}.${subj}.${task}.DSPK*
 
 echo "****************************************************************"
 echo " AFNI | Motion Correction "
 echo "****************************************************************"
 
-rm ${study}.${subj}.${task}.motion*
+#rm ${study}.${subj}.${task}.motion*
 
 3dvolreg \
 -verbose \
@@ -140,7 +140,7 @@ rm ${study}.${subj}.${task}.motion*
 -prefix ${study}.${subj}.${task}.motion.rs \
 ${study}.${subj}.${task}.deoblique+tlrc
 
-rm ${study}.${subj}.${task}.deoblique*
+#rm ${study}.${subj}.${task}.deoblique*
 
 echo "****************************************************************"
 echo " DONE"

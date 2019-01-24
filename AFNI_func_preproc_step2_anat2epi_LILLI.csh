@@ -70,11 +70,13 @@ echo "****************************************************************"
 if ( ${do_epi} == 'yes' ) then
 
 setenv DATA_DIR $SUBJECTS_DIR/${subj}/${task}
-cd ${DATA_DIR}/func
+
 
 echo "****************************************************************"
 echo " AFNI | 3dResample "
 echo "****************************************************************"
+
+cd ${DATA_DIR}/func
 
 3dresample \
 -prefix ${study}.${subj}.${task}.motion+tlrc \
@@ -87,9 +89,11 @@ echo "****************************************************************"
 
 #rm ${study}.${subj}.${task}.motion_shft+orig*
 
+cd ${DATA_DIR}/anat
+
 align_epi_anat.py \
 -anat ${DATA_DIR}/anat/msit.hc001.anat.nii \
--epi ${study}.${subj}.${task}.motion+tlrc \
+-epi ${DATA_DIR}/func/${study}.${subj}.${task}.motion+tlrc \
 -epi_base 6 \
 -anat2epi \
 -suffix _py \
@@ -105,15 +109,15 @@ echo "****************************************************************"
 echo " AFNI | 3dAutomask"
 echo "****************************************************************"
 
-3dAutomask \
--prefix ${study}.${subj}.${task}.motion.mask+tlrc ${study}.${subj}.${task}.motion+tlrc \
--clfrac .9 \
--eclip \
--peels 4 \
--SI 180
+#3dAutomask \
+#-prefix ${study}.${subj}.${task}.motion.mask+tlrc ${study}.${subj}.${task}.motion+tlrc \
+#-clfrac .9 \
+#-eclip \
+#-peels 4 \
+#-SI 180
 
 echo "****************************************************************"
-echo " AFNI | Normalise Coregistered Data"
+echo " AFNI | Normalise Coregistered Data V1"
 echo "****************************************************************"
 
 #rm ${study}.${subj}.${task}.mean*
@@ -122,12 +126,12 @@ echo "****************************************************************"
 
 3dTstat \
 -prefix ${study}.${subj}.${task}.mean \
-${study}.${subj}.${task}.motion_tlrc_py+tlrc
+${study}.${subj}.${task}.motion_py.mask+tlrc
 
 3dTstat \
 -stdev \
 -prefix ${study}.${subj}.${task}.stdev_no_smooth \
-${study}.${subj}.${task}.motion_tlrc_py+tlrc
+${study}.${subj}.${task}.motion_py+tlrc
 
 3dcalc \
 -a ${study}.${subj}.${task}.mean+tlrc \
@@ -147,7 +151,7 @@ cd ${DATA_DIR}/anat/
 #rm ${DATA_DIR}/anat/${study}.${subj}.anat.seg.fsl.MNI.3x3x3+tlrc*
 
 3dfractionize \
--template ${DATA_DIR}/func/${study}.${subj}.${task}.motion_tlrc_py+tlrc \
+-template ${DATA_DIR}/func/${study}.${subj}.${task}.motion_py+tlrc \
 -input ${study}.${subj}.anat.seg.fsl.MNI+tlrc \
 -prefix ${study}.${subj}.anat.seg.fsl.MNI.3x3x3 \
 -clip .2 -vote
@@ -229,14 +233,14 @@ cd ${DATA_DIR}/func/
 -sval 2 \
 -mask ${DATA_DIR}/anat/${study}.${subj}.anat.seg.fsl.MNI.CSF.erode1+tlrc \
 -polort $polort \
-./${study}.${subj}.${task}.motion_tlrc_py+tlrc > ./NOISE_REGRESSOR.${task}.CSF.1D
+./${study}.${subj}.${task}.motion_py+tlrc > ./NOISE_REGRESSOR.${task}.CSF.1D
 
 3dmaskSVD \
 -vnorm \
 -sval 2 \
 -mask ${DATA_DIR}/anat/${study}.${subj}.anat.seg.fsl.MNI.WM.erode2+tlrc \
 -polort $polort \
-./${study}.${subj}.${task}.motion_tlrc_py+tlrc > ./NOISE_REGRESSOR.${task}.WM.1D
+./${study}.${subj}.${task}.motion_py+tlrc > ./NOISE_REGRESSOR.${task}.WM.1D
 
 #rm NOISE_REGRESSOR.${task}.WM.derivative.1D
 #rm NOISE_REGRESSOR.${task}.CSF.derivative.1D
@@ -254,11 +258,11 @@ echo " AFNI | Regress out WM, CSF, and Motion "
 echo " Retain Residuals (errts = error timeseries) "
 echo "****************************************************************"
 
-#rm ${study}.${subj}.${task}.motion_tlrc_py.resid+tlrc*
+#rm ${study}.${subj}.${task}.motion_py.resid+tlrc*
 #rm ${study}.${subj}.${task}.motion.resid+tlrc*
 
 3dDeconvolve \
--input ${study}.${subj}.${task}.motion_tlrc_py+tlrc \
+-input ${study}.${subj}.${task}.motion_py+tlrc \
 -polort $polort \
 -nfirst 0 \
 -num_stimts $num_stimts \
@@ -295,14 +299,14 @@ echo "****************************************************************"
 
 
 3dREMLfit \
--input ${study}.${subj}.${task}.motion_tlrc_py+tlrc \
+-input ${study}.${subj}.${task}.motion_py+tlrc \
 -matrix ${DATA_DIR}/func/${subj}.${task}.resid.xmat.1D \
 -automask \
 -Rbuck temp.bucket \
 -Rerrts ${study}.${subj}.${task}.motion.resid
 
 #rm ${study}.${subj}.${task}.motion_py+orig*
-#rm ${study}.${subj}.${task}.motion_tlrc_py+tlrc*
+#rm ${study}.${subj}.${task}.motion_py+tlrc*
 
 echo "****************************************************************"
 echo " AFNI | Polynomial Detrending "

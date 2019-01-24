@@ -1,12 +1,6 @@
 #! /bin/csh
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-# To-do:
-# 1. Siemens interleaved slice pattern ??
-# ---> mimick general_multiband_slicetime.m
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Configure environment
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
@@ -32,11 +26,6 @@ setenv SUBJECT_LIST $PARAMS_DIR/subjects_list_01-10-19.txt
 # Define parameters
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-# formerly 'seq+z'. Here, slices interleaved and odd...
-#set slice_pattern = 'FROM_IMAGE'
-#set slice_pattern = 'alt+z'
-#set slice_pattern = '@filename'
-
 # number of regressors [WM, CSF, motion]
 set num_stimts = 28
 
@@ -52,9 +41,6 @@ set study = msit
 set task = (${study}_bsm)
 
 set do_epi = 'yes'
-
-# expand_nii_bandit_task.m - shows orig dir struct
-# matlab -nodesktop -nosplash -r "expand_nii_bandit_task;exit"
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Initialize subject(s) environment
@@ -76,61 +62,41 @@ if ( ${do_epi} == 'yes' ) then
 
 cd ${DATA_DIR}/func
 
-#echo "****************************************************************"
-#echo " AFNI | AFNI to NIFTI "
-#echo "****************************************************************"
-
-#3dcopy \
-#-prefix ${DATA_DIR}/func/a${study}.${subj}.func.nii \
-#${DATA_DIR}/func/${study}.${subj}.${task}+orig
-
 echo "****************************************************************"
 echo " AFNI | Despiking (assumes spm mbst has been run)"
 echo "****************************************************************"
-
-#rm ${study}.${subj}.${task}.DSPK*
 
 3dDespike \
 -overwrite \
 -prefix ${study}.${subj}.${task}.DSPK \
 a${study}.${subj}.func.nii
 
-#rm a${study}.${subj}.${task}.nii
+gunzip *.gz*
 
-#echo "****************************************************************"
-#echo " AFNI | 3dTshift "
-#echo "****************************************************************"
+echo "****************************************************************"
+echo " AFNI | 3dTshift "
+echo "****************************************************************"
 
-#rm ${study}.${subj}.${task}.tshft+orig*
-
-#3dTshift \
-#-ignore 1 \
-#-tzero 0 \
-#-TR ${TR} \
-#-tpattern ${slice_pattern} \
-#-prefix ${study}.${subj}.${task}.tshft \
-#${study}.${subj}.${task}.DSPK+orig
-
-#rm ${study}.${subj}.${task}.DSPK+orig*
+3dTshift \
+-ignore 1 \
+-tzero 0 \
+-TR ${TR} \
+-tpattern ${slice_pattern} \
+-prefix ${study}.${subj}.${task}.tshft \
+${study}.${subj}.${task}.DSPK+orig
 
 echo "****************************************************************"
 echo " AFNI | Deobliquing "
 echo "****************************************************************"
-
-#rm ${study}.${subj}.${task}.deoblique*
 
 3dWarp \
 -deoblique \
 -prefix ${study}.${subj}.${task}.deoblique \
 ${study}.${subj}.${task}.DSPK+tlrc
 
-#rm ${study}.${subj}.${task}.DSPK*
-
 echo "****************************************************************"
 echo " AFNI | Motion Correction "
 echo "****************************************************************"
-
-#rm ${study}.${subj}.${task}.motion*
 
 3dvolreg \
 -verbose \
@@ -139,8 +105,6 @@ echo "****************************************************************"
 -1Dfile ${study}.${subj}.${task}.motion.1D \
 -prefix ${study}.${subj}.${task}.motion.rs \
 ${study}.${subj}.${task}.deoblique+tlrc
-
-#rm ${study}.${subj}.${task}.deoblique*
 
 echo "****************************************************************"
 echo " DONE"

@@ -38,11 +38,11 @@ set do_anat = 'yes'
 # Initialize subject(s) environment
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-set subjects = ($SUBJECT_LIST)
-foreach subj ( `cat $subjects` )
+#set subjects = ($SUBJECT_LIST)
+#foreach subj ( `cat $subjects` )
 
-#set subjects = (hc001)
-#foreach subj ($subjects)
+set subjects = (hc001)
+foreach subj ($subjects)
 
 echo "****************************************************************"
 echo " AFNI | Anatomical preprocessing "
@@ -56,7 +56,7 @@ echo "****************************************************************"
 echo " SUMA | Convert from FreeSurfer Space to AFNI "
 echo "****************************************************************"
 
-#@SUMA_Make_Spec_FS -NIFTI -fspath ${RECON_DIR}/${subj} -sid $subj
+@SUMA_Make_Spec_FS -NIFTI -fspath ${RECON_DIR}/${subj} -sid $subj
 
 echo "****************************************************************"
 echo " SUMA | Copy FS --> AFNI Converted Image to BSM Dir"
@@ -66,9 +66,9 @@ setenv DATA_DIR $SUBJECTS_DIR/${subj}/${task}/anat
 
 cd $DATA_DIR
 
-mv brain.finalsurfs.nii msit.${subj}.anat.nii
+cp ${RECON_DIR}/${subj}/SUMA/brain.finalsurfs.nii $DATA_DIR
 
-#cp ${RECON_DIR}/${subj}/SUMA/brain.finalsurfs.nii $DATA_DIR
+mv $DATA_DIR/brain.finalsurfs.nii $DATA_DIR/msit.${subj}.anat.nii
 
 echo "****************************************************************"
 echo "DONE"

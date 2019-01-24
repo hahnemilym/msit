@@ -49,7 +49,7 @@ set do_epi = 'yes'
 #set subjects = ($SUBJECT_LIST)
 #foreach subj ( `cat $subjects` )
 
-set subjects = (hc001)
+set subjects = (test001)
 foreach subj ($subjects)
 
 echo "****************************************************************"
@@ -60,16 +60,16 @@ if ( ${do_epi} == 'yes' ) then
 
 setenv DATA_DIR $SUBJECTS_DIR/${subj}/${task}
 
-echo "****************************************************************"
-echo " AFNI | 3dResample "
-echo "****************************************************************"
+#echo "****************************************************************"
+#echo " AFNI | 3dResample "
+#echo "****************************************************************"
 
-cd ${DATA_DIR}/func
+#cd ${DATA_DIR}/func
 
-3dresample \
--prefix ${DATA_DIR}/func/${study}.${subj}.${task}.motion.1x1x1 \
--input ${DATA_DIR}/func/${study}.${subj}.${task}.motion.rs+tlrc \
--dxyz 1.0 1.0 1.0
+#3dresample \
+#-prefix ${DATA_DIR}/func/${study}.${subj}.${task}.motion.1x1x1 \
+#-input ${DATA_DIR}/func/${study}.${subj}.${task}.motion.rs+tlrc \
+#-dxyz 1.0 1.0 1.0
 
 echo "****************************************************************"
 echo " AFNI | Warp Structural (MEMPRAGE) to Functional (EPI) Space "
@@ -265,7 +265,8 @@ echo "****************************************************************"
 3dREMLfit \
 -input ${study}.${subj}.${task}.motion.1x1x1_tlrc.py+tlrc \
 -matrix ${DATA_DIR}/func/${subj}.${task}.resid.xmat.1D \
--automask \
+-mask ${DATA_DIR}/func/${study}.${subj}.${task}.motion.mask+tlrc
+#-automask \
 -Rbuck temp.bucket \
 -Rerrts ${study}.${subj}.${task}.motion.resid
 
@@ -273,7 +274,10 @@ echo "****************************************************************"
 echo " AFNI | Polynomial Detrending "
 echo "****************************************************************"
 
-3dDetrend -overwrite -verb -polort 2 \
+3dDetrend \
+-overwrite \
+-verb \
+-polort 2 \
 -prefix ${study}.${subj}.${task}.detrend.resid \
 ${study}.${subj}.${task}.motion.resid+tlrc
 
@@ -303,7 +307,7 @@ echo "****************************************************************"
 3dBlurToFWHM \
 -input ${study}.${subj}.${task}.fourier.resid+tlrc \
 -prefix ${study}.${subj}.${task}.smooth.resid \
--FWHM 6.0 \
+-FWHM 8.0 \
 -automask
 
 echo "****************************************************************"

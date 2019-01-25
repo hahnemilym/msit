@@ -35,11 +35,11 @@ set do_anat = 'yes'
 # Initialize subject(s) environment
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-#set subjects = ($SUBJECT_LIST)
-#foreach subj ( `cat $subjects` )
+set subjects = ($SUBJECT_LIST)
+foreach subj ( `cat $subjects` )
 
-set subjects = (hc001)
-foreach subj ($subjects)
+#set subjects = (hc001)
+#foreach subj ($subjects)
 
 echo "****************************************************************"
 echo " AFNI | Anatomical preprocessing "
@@ -63,7 +63,7 @@ echo "****************************************************************"
 
 3dresample \
 -orient ASR \
--inset ${study}.${subj}.anat+orig \
+-inset ${DATA_DIR}/anat/${study}.${subj}.anat+orig \
 -prefix ${study}.${subj}.anat.FSL.nii
 
 echo "****************************************************************"
@@ -102,12 +102,11 @@ echo "****************************************************************"
 gunzip *.gz*
 
 echo "****************************************************************"
-echo " AFNI | @auto_tlrc | Copy anat+orig to to Talairach Space "
+echo " AFNI | @auto_tlrc | Copy anat.2x2x2+orig to to Talairach Space "
 echo "****************************************************************"
 
 @auto_tlrc \
 -no_ss \
--suffix .TLRC \
 -rmode quintic \
 -base TT_icbm452+tlrc \
 -input ${study}.${subj}.anat+orig
@@ -115,13 +114,12 @@ echo "****************************************************************"
 gunzip *.gz*
 
 echo "****************************************************************"
-echo " AFNI | Convert FSL Segmented Data to Talairach Space "
+echo " AFNI | @auto_tlrc | Convert FSL Segmentation to Talairach Space "
 echo "****************************************************************"
 
 @auto_tlrc \
--apar ${study}.${subj}.anat.TLRC+tlrc \
+-apar ${study}.${subj}.anat+tlrc \
 -no_ss \
--suffix .TLRC \
 -rmode quintic \
 -input ${study}.${subj}.anat.seg.fsl+orig
 

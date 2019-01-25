@@ -63,6 +63,17 @@ setenv DATA_DIR $SUBJECTS_DIR/${subj}/${task}
 cd ${DATA_DIR}/func
 
 echo "****************************************************************"
+echo " AFNI | 3dResample | Anatomy 1x1x1 --> 2x2x2 (EPI dimensions) "
+echo "****************************************************************"
+
+3dresample \
+-prefix ${DATA_DIR}/anat/${study}.${subj}.anat.seg.fsl.2x2x2 \
+-input ${DATA_DIR}/anat/${study}.${subj}.anat.seg.fsl+tlrc \
+-dxyz 2.0 2.0 2.0
+
+gunzip ${DATA_DIR}/anat/*.gz
+
+echo "****************************************************************"
 echo " AFNI | Normalise Data - Calculate Coefficient of Variation "
 echo "****************************************************************"
 
@@ -91,25 +102,25 @@ cd ${DATA_DIR}/anat/
 
 3dfractionize \
 -template ${DATA_DIR}/func/${study}.${subj}.${task}.motion.py.strp+tlrc \
--input ${study}.${subj}.anat.seg.fsl+tlrc \
--prefix ${study}.${subj}.anat.seg.fsl.2x2x2 \
+-input ${study}.${subj}.anat.seg.fsl.2x2x2+tlrc \
+-prefix ${study}.${subj}.anat.seg.fsl.fract \
 -clip .2 -vote
 
 3dcalc \
 -overwrite \
--a ${study}.${subj}.anat.seg.fsl.2x2x2+tlrc \
+-a ${study}.${subj}.anat.seg.fsl.fract+tlrc \
 -expr 'equals(a,1)' \
 -prefix ${study}.${subj}.anat.seg.fsl.CSF
 
 3dcalc \
 -overwrite \
--a ${study}.${subj}.anat.seg.fsl.2x2x2+tlrc \
+-a ${study}.${subj}.anat.seg.fsl.fract+tlrc \
 -expr 'equals(a,2)' \
 -prefix ${study}.${subj}.anat.seg.fsl.GM
 
 3dcalc \
 -overwrite \
--a ${study}.${subj}.anat.seg.fsl.2x2x2+tlrc \
+-a ${study}.${subj}.anat.seg.fsl.fract+tlrc \
 -expr 'equals(a,3)' \
 -prefix ${study}.${subj}.anat.seg.fsl.WM
 

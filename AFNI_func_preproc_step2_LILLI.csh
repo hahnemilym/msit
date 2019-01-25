@@ -46,11 +46,11 @@ set do_epi = 'yes'
 # Initialize subject(s) environment
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-#set subjects = ($SUBJECT_LIST)
-#foreach subj ( `cat $subjects` )
+set subjects = ($SUBJECT_LIST)
+foreach subj ( `cat $subjects` )
 
-set subjects = (hc001)
-foreach subj ($subjects)
+#set subjects = (hc001)
+#foreach subj ($subjects)
 
 echo "****************************************************************"
 echo " AFNI | Functional preprocessing | PART 2"
@@ -68,7 +68,7 @@ echo "****************************************************************"
 
 3dresample \
 -prefix ${DATA_DIR}/anat/${study}.${subj}.anat.2x2x2 \
--input ${DATA_DIR}/anat/${study}.${subj}.anat.TLRC+tlrc \
+-input ${DATA_DIR}/anat/${study}.${subj}.anat+tlrc \
 -dxyz 2.0 2.0 2.0
 
 gunzip ${DATA_DIR}/anat/*.gz

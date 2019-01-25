@@ -1,0 +1,5 @@
+foreach script (AFNI_anat_preproc_step1_LILLI.csh AFNI_func_preproc_step1_LILLI.csh AFNI_func_preproc_step2_LILLI.csh AFNI_func_preproc_step2.5_LILLI.csh AFNI_func_preproc_step3_LILLI.csh AFNI_func_preproc_step4_LILLI.csh)
+
+source $script;
+
+end

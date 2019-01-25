@@ -78,7 +78,7 @@ echo "****************************************************************"
 echo " AFNI | Revert segmented output to AFNI format "
 echo "****************************************************************"
 
-gunzip ${study}.${subj}.anat_seg.nii.gz
+gunzip *.gz*
 
 3dcopy \
 -verb ${study}.${subj}.anat_seg.nii \
@@ -86,6 +86,8 @@ ${study}.${subj}.anat.seg.float
 
 3drefit \
 -'anat' ${study}.${subj}.anat.seg.float+orig
+
+gunzip *.gz*
 
 echo "****************************************************************"
 echo " AFNI | Convert the data type from float to short "
@@ -96,6 +98,8 @@ echo "****************************************************************"
 -a ${study}.${subj}.anat.seg.float+orig \
 -expr a \
 -prefix ${study}.${subj}.anat.seg.fsl
+
+gunzip *.gz*
 
 echo "****************************************************************"
 echo " AFNI | @auto_tlrc | Copy anat+orig to to Talairach Space "
@@ -108,13 +112,7 @@ echo "****************************************************************"
 -base TT_icbm452+tlrc \
 -input ${study}.${subj}.anat+orig
 
-echo "****************************************************************"
-echo " AFNI | Run 3dAutomask on Talairach Transformed Data "
-echo "****************************************************************"
-
-3dAutomask \
--prefix ${study}.${subj}.anat.mask \
-${study}.${subj}.anat.TLRC+tlrc
+gunzip *.gz*
 
 echo "****************************************************************"
 echo " AFNI | Convert FSL Segmented Data to Talairach Space "
@@ -126,6 +124,8 @@ echo "****************************************************************"
 -suffix .TLRC \
 -rmode quintic \
 -input ${study}.${subj}.anat.seg.fsl+orig
+
+gunzip *.gz*
 
 echo "****************************************************************"
 echo "DONE"

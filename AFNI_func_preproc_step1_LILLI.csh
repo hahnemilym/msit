@@ -63,27 +63,13 @@ if ( ${do_epi} == 'yes' ) then
 cd ${DATA_DIR}/func
 
 echo "****************************************************************"
-echo " AFNI | Despiking (assumes spm mbst has been run)"
+echo " AFNI | Despiking (assumes SPM MBST script has been run)"
 echo "****************************************************************"
 
 3dDespike \
 -overwrite \
 -prefix ${study}.${subj}.${task}.DSPK \
 a${study}.${subj}.func.nii
-
-gunzip *.gz*
-
-echo "****************************************************************"
-echo " AFNI | 3dTshift "
-echo "****************************************************************"
-
-3dTshift \
--ignore 1 \
--tzero 0 \
--TR ${TR} \
--tpattern ${slice_pattern} \
--prefix ${study}.${subj}.${task}.tshft \
-${study}.${subj}.${task}.DSPK+orig
 
 echo "****************************************************************"
 echo " AFNI | Deobliquing "
@@ -103,7 +89,7 @@ echo "****************************************************************"
 -zpad 1 \
 -base ${study}.${subj}.${task}.deoblique+tlrc'[10]' \
 -1Dfile ${study}.${subj}.${task}.motion.1D \
--prefix ${study}.${subj}.${task}.motion.rs \
+-prefix ${study}.${subj}.${task}.motion \
 ${study}.${subj}.${task}.deoblique+tlrc
 
 echo "****************************************************************"

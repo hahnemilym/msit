@@ -52,29 +52,10 @@ setenv DATA_DIR $SUBJECTS_DIR/${subj}/${task}
 cd ${DATA_DIR}/anat
 
 echo "****************************************************************"
-echo " AFNI | 3dcopy - convert NIFTI to AFNI "
+echo " AFNI | 3dcopy - convert SUMA generated NIFTI to AFNI format "
 echo "****************************************************************"
 
 3dcopy ${study}.${subj}.anat.nii ${study}.${subj}.anat
-
-echo "****************************************************************"
-echo " AFNI | @auto_tlrc "
-echo "****************************************************************"
-
-@auto_tlrc \
--no_ss \
--suffix _MNI \
--rmode quintic \
--base TT_icbm452+tlrc \
--input ${study}.${subj}.anat+orig
-
-echo "****************************************************************"
-echo " AFNI | Run 3dAutomask "
-echo "****************************************************************"
-
-3dAutomask \
--prefix ${study}.${subj}.anat.mask_MNI+tlrc \
-${study}.${subj}.anat_MNI+tlrc
 
 echo "****************************************************************"
 echo " AFNI | Configure FSL segmentation "
@@ -82,7 +63,7 @@ echo "****************************************************************"
 
 3dresample \
 -orient ASR \
--inset ${study}.${subj}.anat+orig.HEAD \
+-inset ${study}.${subj}.anat+orig \
 -prefix ${study}.${subj}.anat.FSL.nii
 
 echo "****************************************************************"
@@ -117,13 +98,32 @@ echo "****************************************************************"
 -prefix ${study}.${subj}.anat.seg.fsl
 
 echo "****************************************************************"
-echo " AFNI | Convert the data to MNI space "
+echo " AFNI | @auto_tlrc | Copy anat+orig to to Talairach Space "
 echo "****************************************************************"
 
 @auto_tlrc \
--apar ${study}.${subj}.anat_MNI+tlrc \
 -no_ss \
--suffix .MNI \
+-suffix .TLRC \
+-rmode quintic \
+-base TT_icbm452+tlrc \
+-input ${study}.${subj}.anat+orig
+
+echo "****************************************************************"
+echo " AFNI | Run 3dAutomask on Talairach Transformed Data "
+echo "****************************************************************"
+
+3dAutomask \
+-prefix ${study}.${subj}.anat.mask \
+${study}.${subj}.anat.TLRC+tlrc
+
+echo "****************************************************************"
+echo " AFNI | Convert FSL Segmented Data to Talairach Space "
+echo "****************************************************************"
+
+@auto_tlrc \
+-apar ${study}.${subj}.anat.TLRC+tlrc \
+-no_ss \
+-suffix .TLRC \
 -rmode quintic \
 -input ${study}.${subj}.anat.seg.fsl+orig
 

@@ -46,11 +46,11 @@ set do_epi = 'yes'
 # Initialize subject(s) environment
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-#set subjects = ($SUBJECT_LIST)
-#foreach subj ( `cat $subjects` )
+set subjects = ($SUBJECT_LIST)
+foreach subj ( `cat $subjects` )
 
-set subjects = (hc001)
-foreach subj ($subjects)
+#set subjects = (hc001)
+#foreach subj ($subjects)
 
 echo "****************************************************************"
 echo " AFNI | Functional preprocessing | PART 3"

@@ -46,11 +46,11 @@ set do_epi = 'yes'
 # Initialize subject(s) environment
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-#set subjects = ($SUBJECT_LIST)
-#foreach subj ( `cat $subjects` )
+set subjects = ($SUBJECT_LIST)
+foreach subj ( `cat $subjects` )
 
-set subjects = (hc001)
-foreach subj ($subjects)
+#set subjects = (hc001)
+#foreach subj ($subjects)
 
 echo "****************************************************************"
 echo " AFNI | Functional preprocessing | PART 3"
@@ -62,16 +62,16 @@ setenv DATA_DIR $SUBJECTS_DIR/${subj}/${task}
 
 cd ${DATA_DIR}/func
 
-echo "****************************************************************"
-echo " AFNI | 3dResample | Anatomy 1x1x1 --> 2x2x2 (EPI dimensions) "
-echo "****************************************************************"
+#echo "****************************************************************"
+#echo " AFNI | 3dResample | Anatomy 1x1x1 --> 2x2x2 (EPI dimensions) "
+#echo "****************************************************************"
 
-3dresample \
--prefix ${DATA_DIR}/anat/${study}.${subj}.anat.seg.fsl.2x2x2 \
--input ${DATA_DIR}/anat/${study}.${subj}.anat.seg.fsl+tlrc \
--dxyz 2.0 2.0 2.0
+#3dresample \
+#-prefix ${DATA_DIR}/anat/${study}.${subj}.anat.seg.fsl.2x2x2 \
+#-input ${DATA_DIR}/anat/${study}.${subj}.anat.seg.fsl+tlrc \
+#-dxyz 2.0 2.0 2.0
 
-gunzip ${DATA_DIR}/anat/*.gz
+#gunzip ${DATA_DIR}/anat/*.gz
 
 echo "****************************************************************"
 echo " AFNI | Normalise Data - Calculate Coefficient of Variation "
@@ -102,7 +102,8 @@ cd ${DATA_DIR}/anat/
 
 3dfractionize \
 -template ${DATA_DIR}/func/${study}.${subj}.${task}.motion.py.strp+tlrc \
--input ${study}.${subj}.anat.seg.fsl.2x2x2+tlrc \
+#-input ${study}.${subj}.anat.seg.fsl.2x2x2+tlrc \
+-input ${study}.${subj}.anat.seg.fsl+tlrc \
 -prefix ${study}.${subj}.anat.seg.fsl.fract \
 -clip .2 -vote
 

@@ -1,12 +1,5 @@
 #! /bin/csh
 
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-## TO-DO
-## Check new arc preproc script for how to generate STC file and integrate into func preproc 1,2
-## Debug subj who crashed on 3dAutomask
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # I. Set up environment
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
@@ -23,21 +16,21 @@ setenv PARAMS_DIR ${MSIT_DIR}/bsm_params
 # Analysis Directory
 setenv ANALYSIS_DIR ${MSIT_DIR}/msit
 
+setenv PARAMS_DIR /autofs/space/lilli_004/users/DARPA-MSIT/msit/msit/params/
+
 # SUBJECT_LIST Directory
-#setenv SUBJECT_LIST ${PARAMS_DIR}/subjects_list_01-10-19.txt
+setenv SUBJECT_LIST ${PARAMS_DIR}/subjects_list_01-10-19.txt
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # II. Define parameters.
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-set FWHM = 6
 set TR = 1.75
 set polort = A
-# A = set polynomial order (detrending param) automatically
+# A = set polynomial order (detrending) automatically
 
 set stim_txt_file = $MSIT_DIR/msit/params/msit_bsm_stim.csv
 set num_stimts = 1
-# E.G. num_stimts = 3; includes shock, rating, CS_presentation.
-# Change this param and to = 2 if comparing C, I conditions seprately. Also stim_times_IM and stim_label
+# e.g. num_stimts = 2; includes C and I conditions separately
 
 set study = msit
 set task = (${study}_bsm)
@@ -53,33 +46,19 @@ set subjects = hc001
 foreach SUBJECT ($subjects)
 
 setenv DATA_DIR ${SUBJECTS_DIR}/${SUBJECT}/${task}
-cd $DATA_DIR
+cd $DATA_DIR;
+
+mkdir bsm;
 
 echo "*******************************************************************************"
 echo " AFNI | Beta Series Method Analysis "
 echo "*******************************************************************************"
 
-rm ${DATA_DIR}/bsm/LSS.xmat.1D
-rm ${DATA_DIR}/bsm/LSS.${SUBJECT}.nii
-
 echo "*******************************************************************************"
-echo " AFNI | 1dtranspose 1D censor data "
+echo " AFNI | Copy 1D Censor Data "
 echo "*******************************************************************************"
 
-rm ${DATA_DIR}/func/censor_file
-rm ${DATA_DIR}/func/func_t
-
-1dtranspose ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.censor.1D > ${DATA_DIR}/bsm/func_t
-
-1dtranspose ${DATA_DIR}/bsm/func_t > ${DATA_DIR}/bsm/censor_file
-
-echo "*******************************************************************************"
-echo " AFNI | 3dAFNItoNIFTI "
-echo "*******************************************************************************"
-
-3dAFNItoNIFTI \
--prefix ${DATA_DIR}/bsm/${study}.${SUBJECT}.${task}.smooth.resid+tlrc.nii \
-${DATA_DIR}/func/${study}.${SUBJECT}.${task}.smooth.resid+tlrc
+cp ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.censor.1D > ${DATA_DIR}/bsm/${study}.${SUBJECT}.${task}.censor.1D
 
 echo "*******************************************************************************"
 echo " AFNI | 3dDeconvolve task "
@@ -87,12 +66,12 @@ echo "**************************************************************************
 
 3dDeconvolve \
 -force_TR $TR \
--input ${DATA_DIR}/bsm/${study}.${SUBJECT}.${task}.smooth.resid+tlrc.nii \
+-input ${DATA_DIR}/func/msit.hc001.msit_bsm.smooth.resid+tlrc \
 -nfirst 0 \
--censor ${DATA_DIR}/bsm/censor_file \
--polort $polort \
+-censor ${DATA_DIR}/bsm/msit.hc001.msit_bsm.censor.1D \
+-polort A \
 -num_stimts $num_stimts \
--stim_times_IM 1 ${stim_txt_file} "BLOCK(1,1)" \
+-stim_times_IM 1 $PARAMS_DIR/msit_bsm_stim.csv "BLOCK(1,1)" \
 -stim_label 1 stim_times_IM_label \
 -x1D ${DATA_DIR}/bsm/LSS.xmat.1D \
 -allzero_OK \
@@ -104,25 +83,24 @@ echo " AFNI | 3dLSS "
 echo "*******************************************************************************"
 
 3dLSS \
--input ${DATA_DIR}/bsm/${study}.${SUBJECT}.${task}.smooth.resid+tlrc.nii \
+-input ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.smooth.resid+tlrc \
 -matrix ${DATA_DIR}/bsm/LSS.xmat.1D \
--prefix ${DATA_DIR}/bsm/LSS.${SUBJECT}.nii
+-prefix ${DATA_DIR}/bsm/LSS.${SUBJECT}
 
 echo "*******************************************************************************"
 echo " AFNI | 3dDespike "
 echo "*******************************************************************************"
 
-rm ${DATA_DIR}/bsm/LSS.${SUBJECT}_despike.nii
-
 3dDespike \
--prefix ${DATA_DIR}/bsm/LSS.${SUBJECT}_despike.nii \
-${DATA_DIR}/bsm/LSS.${SUBJECT}.nii
+-prefix ${DATA_DIR}/bsm/LSS.${SUBJECT}_despike \
+${DATA_DIR}/bsm/LSS.${SUBJECT}
 
 echo "*******************************************************************************"
 echo " AFNI | Beta Series Method COMPLETE: " ${SUBJECT}
 echo "*******************************************************************************"
 
-cd ${ANALYSIS_DIR}
+cd ${ANALYSIS_DIR}/msit
 
 ## End subject loop
 end
+

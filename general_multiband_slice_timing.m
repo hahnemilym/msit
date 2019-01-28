@@ -8,8 +8,7 @@ function general_multiband_slice_timing(subjects, conditions, runs )
 
 %% Example Commands: 
 
-% 1. general_multiband_slice_timing({'hc001', 'hc003'},{'msit','ecr'},{1})
-% 2. general_multiband_slice_timing({'hc001', 'hc003'},{'arc_rer'},{1,2,3})
+% 1. general_multiband_slice_timing({'hc001', 'hc003'},{'msit'},{1})
 
 % Note: arc_rer can only be processed by itself. 
 % Other tasks may be processed together.

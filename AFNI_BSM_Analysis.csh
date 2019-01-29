@@ -16,7 +16,7 @@ setenv PARAMS_DIR ${MSIT_DIR}/bsm_params
 # Analysis Directory
 setenv ANALYSIS_DIR ${MSIT_DIR}/msit
 
-setenv PARAMS_DIR /autofs/space/lilli_004/users/DARPA-MSIT/msit/msit/params/
+setenv IM_PARAMS_DIR $MSIT_DIR/msit/params
 
 # SUBJECT_LIST Directory
 setenv SUBJECT_LIST ${PARAMS_DIR}/subjects.txt
@@ -28,9 +28,9 @@ set TR = 1.75
 set polort = A
 # A = set polynomial order (detrending) automatically
 
-set stim_Combined = $MSIT_DIR/msit/params/combined_durations.csv
-set stim_Incongruent = $MSIT_DIR/msit/params/incongruent_durations.csv
-set stim_Congruent = $MSIT_DIR/msit/params/congruent_durations.csv
+set stim_Combined = $IM_PARAMS_DIR/combined_durations.csv
+set stim_Incongruent = $IM_PARAMS_DIR/incongruent_durations.csv
+set stim_Congruent = $IM_PARAMS_DIR/congruent_durations.csv
 
 set num_stimts = 1
 # e.g. num_stimts = 2; includes C and I conditions separately
@@ -84,12 +84,12 @@ echo "**************************************************************************
 -censor ${DATA_DIR}/bsm/${study}.${SUBJECT}.${task}.censor.T.1D \
 -polort A \
 -num_stimts $num_stimts \
--stim_times_IM 1 $stim_Combined "dmBLOCK" \
+-stim_times_IM 1 $stim_Combined "BLOCK(1.75,1)" \
 -stim_label 1 BSM_IM_IC_Combined \
--stim_times_IM 2 $stim_Incongruent "dmBLOCK" \
--stim_label 2 BSM_IM_Incongruent \
--stim_times_IM 3 $stim_Congruent "dmBLOCK" \
--stim_label 3 BSM_IM_Congruent \
+#-stim_times_IM 2 $stim_Incongruent "BLOCK(1.75,1)" \
+#-stim_label 2 BSM_IM_Incongruent \
+#-stim_times_IM 3 $stim_Congruent "BLOCK(1.75,1)" \
+#-stim_label 3 BSM_IM_Congruent \
 -x1D ${DATA_DIR}/bsm/LSS.xmat.1D \
 -allzero_OK \
 -nobucket \

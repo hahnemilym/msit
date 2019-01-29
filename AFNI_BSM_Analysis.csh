@@ -54,11 +54,11 @@ cd $DATA_DIR;
 mkdir bsm;
 
 echo "*******************************************************************************"
-echo " AFNI | Beta Series Method Analysis "
+echo " AFNI | Beta Series Method Analysis | " ${SUBJECT}
 echo "*******************************************************************************"
 
 echo "*******************************************************************************"
-echo " AFNI | Copy 1D Censor Data "
+echo " AFNI | Copy 1D Censor Data | " ${SUBJECT}
 echo "*******************************************************************************"
 
 rm ${DATA_DIR}/bsm/${study}.${SUBJECT}.${task}.censor.T.1D
@@ -69,7 +69,7 @@ rm ${DATA_DIR}/bsm/${study}.${SUBJECT}.${task}.censor.T.1D
 -write ${DATA_DIR}/bsm/${study}.${SUBJECT}.${task}.censor.T.1D
 
 echo "*******************************************************************************"
-echo " AFNI | 3dDeconvolve task "
+echo " AFNI | 3dDeconvolve task | " ${SUBJECT}
 echo "*******************************************************************************"
 
 #You can also use dmBLOCK with -stim_times_IM, in which case    
@@ -96,10 +96,10 @@ echo "**************************************************************************
 -x1D_stop
 
 echo "*******************************************************************************"
-echo " AFNI | 3dLSS "
+echo " AFNI | 3dLSS | " ${SUBJECT}
 echo "*******************************************************************************"
 
-rm ${DATA_DIR}/bsm/LSS.${SUBJECT}
+rm ${DATA_DIR}/bsm/LSS.${SUBJECT}+tlrc
 
 3dLSS \
 -input ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.smooth.resid+tlrc \
@@ -107,7 +107,7 @@ rm ${DATA_DIR}/bsm/LSS.${SUBJECT}
 -prefix ${DATA_DIR}/bsm/LSS.${SUBJECT}
 
 echo "*******************************************************************************"
-echo " AFNI | 3dDespike "
+echo " AFNI | 3dDespike | " ${SUBJECT}
 echo "*******************************************************************************"
 
 rm ${DATA_DIR}/bsm/LSS.${SUBJECT}_despike+tlrc
@@ -117,7 +117,7 @@ rm ${DATA_DIR}/bsm/LSS.${SUBJECT}_despike+tlrc
 ${DATA_DIR}/bsm/LSS.${SUBJECT}+tlrc
 
 echo "*******************************************************************************"
-echo " AFNI | Beta Series Method COMPLETE: " ${SUBJECT}
+echo " AFNI | Beta Series Method COMPLETE | " ${SUBJECT}
 echo "*******************************************************************************"
 
 cd ${ANALYSIS_DIR}

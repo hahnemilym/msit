@@ -42,13 +42,13 @@ set task = (${study}_bsm)
 # III. INDIVIDUAL ANALYSES
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-set subjects = ($SUBJECT_LIST)
-foreach SUBJECT ( `cat $subjects` )
+#set subjects = ($SUBJECT_LIST)
+#foreach SUBJECT ( `cat $subjects` )
 
-#set subjects = hc001
-#foreach SUBJECT ($subjects)
+set subjects = hc001
+foreach SUBJECT ($subjects)
 
-setenv DATA_DIR ${SUBJECTS_DIR}/${SUBJECT}/${task}
+setenv DATA_DIR ${SUBJECTS_DIR}/test001/${task}
 cd $DATA_DIR;
 
 mkdir bsm;
@@ -82,7 +82,7 @@ echo "**************************************************************************
 -input ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.smooth.resid+tlrc \
 -nfirst 1 \
 -censor ${DATA_DIR}/bsm/${study}.${SUBJECT}.${task}.censor.T.1D \
--polort A \
+#-polort A \
 -num_stimts $num_stimts \
 -stim_times_IM 1 $stim_Combined "BLOCK(1.75,1)" \
 -stim_label 1 BSM_IM_IC_Combined \
@@ -99,7 +99,7 @@ echo "**************************************************************************
 echo " AFNI | 3dLSS | " ${SUBJECT}
 echo "*******************************************************************************"
 
-rm ${DATA_DIR}/bsm/LSS.${SUBJECT}+tlrc
+rm ${DATA_DIR}/bsm/LSS.${SUBJECT}*
 
 3dLSS \
 -input ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.smooth.resid+tlrc \
@@ -110,7 +110,7 @@ echo "**************************************************************************
 echo " AFNI | 3dDespike | " ${SUBJECT}
 echo "*******************************************************************************"
 
-rm ${DATA_DIR}/bsm/LSS.${SUBJECT}_despike+tlrc
+rm ${DATA_DIR}/bsm/LSS.${SUBJECT}_despike*
 
 3dDespike \
 -prefix ${DATA_DIR}/bsm/LSS.${SUBJECT}_despike \

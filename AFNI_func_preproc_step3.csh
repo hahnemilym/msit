@@ -20,7 +20,7 @@ setenv PARAMS_DIR $MSIT_DIR/bsm_params/
 setenv ANALYSIS_DIR $MSIT_DIR/msit
 
 # Subjects List
-setenv SUBJECT_LIST $PARAMS_DIR/subjects_list_01-10-19.txt
+setenv SUBJECT_LIST $PARAMS_DIR/subjects.txt
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Define parameters
@@ -60,18 +60,31 @@ if ( ${do_epi} == 'yes' ) then
 
 setenv DATA_DIR $SUBJECTS_DIR/${subj}/${task}
 
+cd ${DATA_DIR}/anat
+
+rm *msit.${subj}.anat.seg.fsl.fract*
+rm *msit.${subj}.anat.seg.fsl.WM.erode1* 
+rm *msit.${subj}.anat.seg.fsl.WM.erode2*
+rm *msit.${subj}.anat.seg.fsl.CSF.erode1*
+rm *msit.${subj}.anat.seg.fsl.2x2x2*
+
 cd ${DATA_DIR}/func
 
-#echo "****************************************************************"
-#echo " AFNI | 3dResample | Anatomy 1x1x1 --> 2x2x2 (EPI dimensions) "
-#echo "****************************************************************"
+rm *msit.${subj}.msit_bsm.mean*
+rm *msit.${subj}.msit_bsm.stdev_no_smooth*
+rm *msit.${subj}.msit_bsm.tSNR_no_smooth*
+rm *msit.${subj}.msit_bsm.motion.resid*
 
-#3dresample \
-#-prefix ${DATA_DIR}/anat/${study}.${subj}.anat.seg.fsl.2x2x2 \
-#-input ${DATA_DIR}/anat/${study}.${subj}.anat.seg.fsl+tlrc \
-#-dxyz 2.0 2.0 2.0
+echo "****************************************************************"
+echo " AFNI | 3dResample | Anatomy 1x1x1 --> 2x2x2 (EPI dimensions) "
+echo "****************************************************************"
 
-#gunzip ${DATA_DIR}/anat/*.gz
+3dresample \
+-prefix ${DATA_DIR}/anat/${study}.${subj}.anat.seg.fsl.2x2x2 \
+-input ${DATA_DIR}/anat/${study}.${subj}.anat.seg.fsl+tlrc \
+-dxyz 2.0 2.0 2.0
+
+gunzip ${DATA_DIR}/anat/*.gz
 
 echo "****************************************************************"
 echo " AFNI | Normalise Data - Calculate Coefficient of Variation "

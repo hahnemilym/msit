@@ -35,11 +35,11 @@ set task = (${study}_bsm)
 # III. INDIVIDUAL ANALYSES
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-#set subjects = ($SUBJECT_LIST)
-#foreach SUBJECT ( `cat $subjects` )
+set subjects = ($SUBJECT_LIST)
+foreach SUBJECT ( `cat $subjects` )
 
-set subjects = hc001
-foreach SUBJECT ($subjects)
+#set subjects = hc001
+#foreach SUBJECT ($subjects)
 
 foreach ROI (dACC L_dlPFC R_dlPFC IFG)
 

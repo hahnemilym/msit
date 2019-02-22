@@ -23,7 +23,7 @@ setenv PARAMS_DIR $MSIT_DIR/bsm_params/
 setenv ANALYSIS_DIR $MSIT_DIR/msit
 
 # Subjects List
-setenv SUBJECT_LIST $PARAMS_DIR/subjects_list_01-10-19.txt
+setenv SUBJECT_LIST $PARAMS_DIR/subjects.txt
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # Define parameters
@@ -38,11 +38,11 @@ set do_anat = 'yes'
 # Initialize subject(s) environment
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-#set subjects = ($SUBJECT_LIST)
-#foreach subj ( `cat $subjects` )
+set subjects = ($SUBJECT_LIST)
+foreach subj ( `cat $subjects` )
 
-set subjects = (hc001)
-foreach subj ($subjects)
+#set subjects = (hc001)
+#foreach subj ($subjects)
 
 echo "****************************************************************"
 echo " AFNI | Anatomical preprocessing "

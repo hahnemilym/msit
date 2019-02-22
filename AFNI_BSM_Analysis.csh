@@ -42,13 +42,13 @@ set task = (${study}_bsm)
 # III. INDIVIDUAL ANALYSES
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-#set subjects = ($SUBJECT_LIST)
-#foreach SUBJECT ( `cat $subjects` )
+set subjects = ($SUBJECT_LIST)
+foreach SUBJECT ( `cat $subjects` )
 
-set subjects = hc001
-foreach SUBJECT ($subjects)
+#set subjects = hc001
+#foreach SUBJECT ($subjects)
 
-setenv DATA_DIR ${SUBJECTS_DIR}/test001/${task}
+setenv DATA_DIR ${SUBJECTS_DIR}/${SUBJECT}/${task}
 cd $DATA_DIR;
 
 mkdir bsm;

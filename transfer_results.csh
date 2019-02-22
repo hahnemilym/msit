@@ -1,6 +1,7 @@
 #! /bin/csh
 
 setenv dir /autofs/space/lilli_004/users/DARPA-MSIT/msit/msit/scripts
+setenv out_dir /autofs/space/lilli_004/users/DARPA-MSIT/msit
 setenv subs_dir /autofs/space/lilli_004/users/DARPA-MSIT/msit/subjs
 setenv params_dir /autofs/space/lilli_004/users/DARPA-MSIT/msit/msit/params
 
@@ -9,6 +10,7 @@ setenv params_dir /autofs/space/lilli_004/users/DARPA-MSIT/msit/msit/params
 
 
 set subjects_list = ($params_dir/subjects.txt)
+
 foreach subjs (`cat $subjects_list`)
 	cd $subs_dir/${subjs}/msit_bsm/anat;
 	cp *.anat.mask+tlrc.* ../results;
@@ -18,11 +20,10 @@ foreach subjs (`cat $subjects_list`)
 	cp *.smooth.resid+tlrc.* ../results;
 	cp *.motion.py.strp+tlrc.* ../results;
 	echo "-------EPIs COPIED for " $subjs "----------"
+	cd $subs_dir/${subjs}/msit_bsm/bsm;
 	cp *LSS* ../results;
 	echo "-------BSM COPIED for " $subjs "----------"
 
 end
 
 cd $dir
-
-

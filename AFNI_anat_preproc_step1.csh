@@ -102,13 +102,13 @@ echo "****************************************************************"
 gunzip *.gz*
 
 echo "****************************************************************"
-echo " AFNI | @auto_tlrc | Copy anat.2x2x2+orig to to Talairach Space "
+echo " AFNI | @auto_tlrc | Copy anat to to Talairach Space "
 echo "****************************************************************"
 
 @auto_tlrc \
 -no_ss \
 -rmode quintic \
--base TT_icbm452+tlrc \
+-base TT_N27+tlrc \
 -input ${study}.${subj}.anat+orig
 
 gunzip *.gz*

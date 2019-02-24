@@ -74,9 +74,10 @@ ${ROI_DIR}/${ROI}+tlrc ${ROI}+tlrc
 
 3dmaskave \
 -quiet \
--mask ${ROI}_mask_resamp+tlrc ${ROI}_LSS_avg+tlrc > ${ROI}_LSS_avg_file.1D
+-mask ${ROI}_mask_resamp+tlrc ${ROI}_LSS_avg+tlrc > ${SUBJECT}.${ROI}_LSS_avg_file.1D
 
-1dplot ${ROI}_LSS_avg_file.1D
+1dplot \
+${SUBJECT}.${ROI}_LSS_avg_file.1D
 
 else if ($ROI == 'dACC' || $ROI == 'L_dlPFC' || $ROI == 'R_dlPFC') then
 
@@ -97,7 +98,8 @@ ${ROI_DIR}/${ROI}.nii ${ROI}.nii
 -quiet \
 -mask ${ROI}_mask_resamp+tlrc ${ROI}_LSS_avg+tlrc > ${SUBJECT}.${ROI}_LSS_avg_file.1D
 
-#1dplot ${ROI}_LSS_avg_file.1D
+1dplot \
+${SUBJECT}.${ROI}_LSS_avg_file.1D
 
 else
 echo "Check ROIs"

@@ -46,14 +46,14 @@ set do_epi = 'yes'
 # Initialize subject(s) environment
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-set subjects = ($SUBJECT_LIST)
-foreach subj ( `cat $subjects` )
+#set subjects = ($SUBJECT_LIST)
+#foreach subj ( `cat $subjects` )
 
-#set subjects = (hc008)
-#foreach subj ($subjects)
+set subjects = (hc020)
+foreach subj ($subjects)
 
 echo "****************************************************************"
-echo " AFNI | Functional preprocessing | PART 3"
+echo " AFNI | Functional preprocessing | PART 4"
 echo "****************************************************************"
 
 if ( ${do_epi} == 'yes' ) then
@@ -67,6 +67,9 @@ echo " AFNI | Polynomial Detrending "
 echo "****************************************************************"
 
 cd ${DATA_DIR}/func/
+
+rm *detrend.resid_w_mean*
+rm *.msit_bsm.fourier.resid*	
 
 3dDetrend \
 -overwrite \

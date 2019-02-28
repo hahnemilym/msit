@@ -35,21 +35,21 @@ set task = (${study}_bsm)
 # III. INDIVIDUAL ANALYSES
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-set subjects = ($SUBJECT_LIST)
-foreach SUBJECT ( `cat $subjects` )
+#set subjects = ($SUBJECT_LIST)
+#foreach SUBJECT ( `cat $subjects` )
 
-#set subjects = hc001
-#foreach SUBJECT ($subjects)
+set subjects = hc001
+foreach SUBJECT ($subjects)
 
-foreach ROI (dACC L_dlPFC R_dlPFC IFG)
+foreach ROI (IFG dACC R_dlPFC L_dlPFC)
+#foreach ROI (L_dlPFC)
 
 setenv DATA_DIR ${SUBJECTS_DIR}/${SUBJECT}/${task}
-cd $DATA_DIR/results;
+cd $DATA_DIR;
 
 echo "*******************************************************************************"
 echo " AFNI | BSM Analysis - Extract $ROI Betas for $SUBJECT "
 echo "*******************************************************************************"
-
 
 echo "*******************************************************************************"
 echo " AFNI | 3dcopy & 3dresample | Fit masks to func data       | " 
@@ -57,54 +57,19 @@ echo " AFNI | 3dbucket            | Stage func file to be masked | "
 echo " AFNI | 3dmaskave           | Average voxels in mask       | "
 echo "*******************************************************************************"
 
-if ($ROI == 'IFG') then
+cd $DATA_DIR/bsm;
 
-rm *${ROI}*
+rm ${DATA_DIR}/bsm/${SUBJECT}.${ROI}_LSS_avg_file.1D*;
+rm ${DATA_DIR}/bsm/${SUBJECT}.${ROI}_LSS_avg*;
 
-3dcopy \
-${ROI_DIR}/${ROI}+tlrc ${ROI}+tlrc
-
-3dresample \
--master LSS.${SUBJECT}_despike+tlrc \
--prefix ${ROI}_mask_resamp \
--input ${ROI}+tlrc
-
-3dbucket \
--prefix ${ROI}_LSS_avg LSS.${SUBJECT}_despike+tlrc
+3dbucket -prefix ${DATA_DIR}/bsm/${SUBJECT}.${ROI}_LSS_avg ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}_despike+tlrc
 
 3dmaskave \
 -quiet \
--mask ${ROI}_mask_resamp+tlrc ${ROI}_LSS_avg+tlrc > ${SUBJECT}.${ROI}_LSS_avg_file.1D
+#-perc 90 \
+-mask $DATA_DIR/bsm/$ROI.${SUBJECT}.mask+tlrc ${DATA_DIR}/bsm/${SUBJECT}.${ROI}_LSS_avg+tlrc > ${DATA_DIR}/bsm/${SUBJECT}.${ROI}_LSS_avg_file.1D
 
-1dplot \
-${SUBJECT}.${ROI}_LSS_avg_file.1D
-
-else if ($ROI == 'dACC' || $ROI == 'L_dlPFC' || $ROI == 'R_dlPFC') then
-
-rm *${ROI}*
-
-3dcopy \
-${ROI_DIR}/${ROI}.nii ${ROI}.nii
-
-3dresample \
--master LSS.${SUBJECT}_despike+tlrc \
--prefix ${ROI}_mask_resamp \
--input ${ROI}.nii
-
-3dbucket \
--prefix ${ROI}_LSS_avg LSS.${SUBJECT}_despike+tlrc
-
-3dmaskave \
--quiet \
--mask ${ROI}_mask_resamp+tlrc ${ROI}_LSS_avg+tlrc > ${SUBJECT}.${ROI}_LSS_avg_file.1D
-
-1dplot \
-${SUBJECT}.${ROI}_LSS_avg_file.1D
-
-else
-echo "Check ROIs"
-
-endif
+1dplot ${DATA_DIR}/bsm/${SUBJECT}.${ROI}_LSS_avg_file.1D
 
 echo "*******************************************************************************"
 echo " AFNI | Beta Series Method - Beta Extraction COMPLETE | " ${SUBJECT}

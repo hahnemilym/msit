@@ -31,7 +31,7 @@ set num_stimts = 28
 
 # A = automatically choose polynomial detrending value based on
 # time duration D of longest run: pnum = 1 + int(D/150)
-set polort = A
+#set polort = A
 
 set FWHM = 6
 set TR = 1.75

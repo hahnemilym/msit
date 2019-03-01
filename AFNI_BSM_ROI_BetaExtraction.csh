@@ -42,7 +42,7 @@ set subjects = hc001
 foreach SUBJECT ($subjects)
 
 foreach ROI (IFG dACC R_dlPFC L_dlPFC)
-#foreach ROI (L_dlPFC)
+#foreach ROI (dACC)
 
 setenv DATA_DIR ${SUBJECTS_DIR}/${SUBJECT}/${task}
 cd $DATA_DIR;
@@ -62,12 +62,14 @@ cd $DATA_DIR/bsm;
 rm ${DATA_DIR}/bsm/${SUBJECT}.${ROI}_LSS_avg_file.1D*;
 rm ${DATA_DIR}/bsm/${SUBJECT}.${ROI}_LSS_avg*;
 
+set tthresh = 2
+
 3dbucket -prefix ${DATA_DIR}/bsm/${SUBJECT}.${ROI}_LSS_avg ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}_despike+tlrc
 
 3dmaskave \
 -quiet \
 #-perc 90 \
--mask $DATA_DIR/bsm/$ROI.${SUBJECT}.mask+tlrc ${DATA_DIR}/bsm/${SUBJECT}.${ROI}_LSS_avg+tlrc > ${DATA_DIR}/bsm/${SUBJECT}.${ROI}_LSS_avg_file.1D
+-mask $DATA_DIR/bsm/OSGM_${ROI}_clust_T.${tthresh}_MASK+tlrc ${DATA_DIR}/bsm/${SUBJECT}.${ROI}_LSS_avg+tlrc > ${DATA_DIR}/bsm/${SUBJECT}.${ROI}_LSS_avg_file.1D
 
 1dplot ${DATA_DIR}/bsm/${SUBJECT}.${ROI}_LSS_avg_file.1D
 

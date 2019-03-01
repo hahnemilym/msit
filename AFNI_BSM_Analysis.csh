@@ -40,22 +40,22 @@ set task = (${study}_bsm)
 # III. INDIVIDUAL ANALYSES
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-#set subjects = ($SUBJECT_LIST)
-#foreach SUBJECT ( `cat $subjects` )
+set subjects = ($SUBJECT_LIST)
+foreach SUBJECT ( `cat $subjects` )
 
-set subjects = hc001
-foreach SUBJECT ($subjects)
+#set subjects = (hc006 hc007)
+#foreach SUBJECT ($subjects)
 
 setenv DATA_DIR ${SUBJECTS_DIR}/${SUBJECT}/${task}
 cd $DATA_DIR;
 
-#rm $DATA_DIR/results/${SUBJECT}_durations.par;
-rm $DATA_DIR/results/${SUBJECT}_durations_dmBLOCK.par;
+##rm $DATA_DIR/results/${SUBJECT}_durations.par;
+#rm $DATA_DIR/results/${SUBJECT}_durations_dmBLOCK.par;
 
-#cp $MSIT_DIR/durations/${SUBJECT}_durations.par $DATA_DIR/results/;
-cp $MSIT_DIR/durations/${SUBJECT}_durations_dmBLOCK.par $DATA_DIR/results/;
+##cp $MSIT_DIR/durations/${SUBJECT}_durations.par $DATA_DIR/results/;
+#cp $MSIT_DIR/durations/${SUBJECT}_durations_dmBLOCK.par $DATA_DIR/results/;
 
-#set stim_Combined = $DATA_DIR/results/${SUBJECT}_durations.par;
+##set stim_Combined = $DATA_DIR/results/${SUBJECT}_durations.par;
 set stim_Combined = $DATA_DIR/results/${SUBJECT}_durations_dmBLOCK.par;
 
 echo "*******************************************************************************"

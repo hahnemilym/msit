@@ -285,7 +285,9 @@ ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}_despike+tlrc
 ${DATA_DIR}/bsm/${SUBJECT}.${ROI}_LSS_avg+tlrc \
 > ${DATA_DIR}/bsm/${SUBJECT}.${ROI}_LSS_avg_file.1D
 
-1dplot ${SUBJECT}.${ROI}_LSS_avg_file.1D 
+cp ${DATA_DIR}/bsm/${SUBJECT}.${ROI}_LSS_avg_file.1D $MSIT_DIR/beta_extract_output/
+
+#1dplot ${SUBJECT}.${ROI}_LSS_avg_file.1D 
 
 echo "*******************************************************************************"
 echo " AFNI | Beta Series Method - Beta Extraction COMPLETE | " ${SUBJECT}

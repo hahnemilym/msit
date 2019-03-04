@@ -40,11 +40,11 @@ set task = (${study}_bsm)
 # III. INDIVIDUAL ANALYSES
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-set subjects = ($SUBJECT_LIST)
-foreach SUBJECT ( `cat $subjects` )
+#set subjects = ($SUBJECT_LIST)
+#foreach SUBJECT ( `cat $subjects` )
 
-#set subjects = (hc001)
-#foreach SUBJECT ($subjects)
+set subjects = (hc009)
+foreach SUBJECT ($subjects)
 
 setenv DATA_DIR ${SUBJECTS_DIR}/${SUBJECT}/${task}
 cd $DATA_DIR;
@@ -77,8 +77,7 @@ echo "**************************************************************************
 echo " AFNI | 3dresample ROI masks to TLRC space | " ${SUBJECT}
 echo "*******************************************************************************"
 
-#foreach ROI (dACC R_dlPFC L_dlPFC R_IFG L_IFG)
-foreach ROI (R_IFG L_IFG)
+foreach ROI (R_IFG L_IFG dACC R_dlPFC L_dlPFC )
 
 cd $DATA_DIR;
 
@@ -105,55 +104,59 @@ else if ($ROI == 'dACC' || $ROI == 'L_dlPFC' || $ROI == 'R_dlPFC') then
 
 endif
 
-echo "*******************************************************************************"
-echo " AFNI | 3dDeconvolve task | " ${SUBJECT} "|" ${ROI}
-echo "*******************************************************************************"
+#echo "*******************************************************************************"
+#echo " AFNI | 3dDeconvolve task | " ${SUBJECT} "|" ${ROI}
+#echo "*******************************************************************************"
 
-cd $DATA_DIR/bsm;
+#cd $DATA_DIR/bsm;
 
-3dDeconvolve \
--force_TR $TR \
--input ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.smooth.resid+tlrc \
--nfirst 1 \
--censor $DATA_DIR/bsm/${study}.${SUBJECT}.${task}.censor.T.1D \
-#-polort 'A' \
--num_stimts $num_stimts \
-#-stim_times_IM 1 $stim_Combined "BLOCK(1.75,1)" \
--stim_times_IM 1 $stim_Combined 'dmBLOCK' \
--stim_label 1 BSM_IM_IC_Combined \
--x1D $DATA_DIR/bsm/LSS.${ROI}.${SUBJECT}.xmat.1D \
--allzero_OK \
--nobucket \
--x1D_stop
+#3dDeconvolve \
+#-force_TR $TR \
+#-input ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.smooth.resid+tlrc \
+#-nfirst 1 \
+#-censor $DATA_DIR/bsm/${study}.${SUBJECT}.${task}.censor.T.1D \
+##-polort 'A' \
+#-num_stimts $num_stimts \
+##-stim_times_IM 1 $stim_Combined "BLOCK(1.75,1)" \
+#-stim_times_IM 1 $stim_Combined 'dmBLOCK' \
+#-stim_label 1 BSM_IM_IC_Combined \
+#-x1D $DATA_DIR/bsm/LSS.${ROI}.${SUBJECT}.xmat.1D \
+#-allzero_OK \
+#-nobucket \
+#-x1D_stop
 
-echo "*******************************************************************************"
-echo " AFNI | 3dLSS | " ${SUBJECT} "|" ${ROI}
-echo "*******************************************************************************"
+#echo "*******************************************************************************"
+#echo " AFNI | 3dLSS | " ${SUBJECT} "|" ${ROI}
+#echo "*******************************************************************************"
 
-rm $DATA_DIR/bsm/LSS.${ROI}.${SUBJECT}+tlrc*;
+#rm $DATA_DIR/bsm/LSS.${ROI}.${SUBJECT}+tlrc*;
 
-3dLSS \
--input ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.smooth.resid+tlrc \
--matrix ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}.xmat.1D \
--prefix ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}
+#3dLSS \
+#-input ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.smooth.resid+tlrc \
+#-matrix ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}.xmat.1D \
+#-prefix ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}
 
-echo "*******************************************************************************"
-echo " AFNI | Beta Series Method COMPLETE | " ${SUBJECT} "|" ${ROI}
-echo "*******************************************************************************"
+#echo "*******************************************************************************"
+#echo " AFNI | Beta Series Method COMPLETE | " ${SUBJECT} "|" ${ROI}
+#echo "*******************************************************************************"
 
-echo "*******************************************************************************"
-echo " AFNI | 3dDespike | " ${SUBJECT} "|" ${ROI}
-echo "*******************************************************************************"
+#echo "*******************************************************************************"
+#echo " AFNI | 3dDespike | " ${SUBJECT} "|" ${ROI}
+#echo "*******************************************************************************"
 
-rm ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}_despike*;
+#rm ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}_despike*;
 
-3dDespike \
--prefix ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}_despike \
-${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}+tlrc
+#3dDespike \
+#-prefix ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}_despike \
+#${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}+tlrc
 
 echo "*******************************************************************************"
 echo " AFNI | 3dTstat | Sum LSS sub bricks for 3dclust | " ${SUBJECT} "|" ${ROI}
 echo "*******************************************************************************"
+
+#-tsnr \
+#-autocorr 10 \
+#-mean \
 
 cd $DATA_DIR/bsm;
 
@@ -164,14 +167,7 @@ rm OUT_${ROI}.txt;
 rm LSS.${ROI}.${SUBJECT}_3dmean*;
 #rm 3dTstat_autocorr_tsnr_data.txt;
 
-3dTstat \
--sum \
--tsnr \
--autocorr 10 \
--mask ${ROI}_mask_resamp+tlrc \
--prefix LSS.${ROI}.${SUBJECT}_3dmean ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}_despike+tlrc
-#-mean \
-#-verbose \
+3dTstat -sum -mask ${ROI}_mask_resamp+tlrc -prefix LSS.${ROI}.${SUBJECT}_3dmean ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}_despike+tlrc
 
 cp LSS.${ROI}.${SUBJECT}_3dmean* ${DATA_DIR}/results/;
 #cp 3dTstat_autocorr_tsnr_data.txt ${DATA_DIR}/results/;
@@ -180,16 +176,7 @@ echo "**************************************************************************
 echo " AFNI | 3dClusterize | Generate clusters for ROI sphere | " ${SUBJECT} "|" ${ROI}
 echo "*******************************************************************************"
 
-3dClusterize \
--inset ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}_3dmean+tlrc \
--mask ${ROI}_mask_resamp+tlrc. \
--1sided RIGHT_TAIL p=0.001 \
--clust_nvox 30 \
--NN 3 \
--idat 0 \
--ithr 0 \
--pref_map LSS_${ROI}.ClusterMap \
--pref_dat LSS_${ROI}.ClusterEffEst > OUT_${ROI}.txt;
+3dClusterize -inset ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}_3dmean+tlrc -mask ${DATA_DIR}/bsm/${ROI}_mask_resamp+tlrc. -1sided RIGHT_TAIL p=0.001 -clust_nvox 30 -NN 3 -ithr 0 -idat 0 -pref_map ${DATA_DIR}/bsm/LSS_${ROI}.ClusterMap -pref_dat ${DATA_DIR}/bsm/LSS_${ROI}.ClusterEffEst > OUT_${ROI}.txt
 
 cp LSS_${ROI}.ClusterEffEst* $DATA_DIR/results/;
 

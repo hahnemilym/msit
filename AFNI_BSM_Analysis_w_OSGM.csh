@@ -77,8 +77,10 @@ echo "**************************************************************************
 echo " AFNI | 3dresample ROI masks to TLRC space | " ${SUBJECT}
 echo "*******************************************************************************"
 
-#foreach ROI (dACC R_dlPFC L_dlPFC R_IFG L_IFG)
-foreach ROI (R_IFG L_IFG)
+## Use 3dBrickStat TTnew+tlrc -count -percentile 90 1 90 to return # voxels above % threshold
+
+foreach ROI (dACC R_dlPFC L_dlPFC R_IFG L_IFG)
+#foreach ROI (dACC)
 
 cd $DATA_DIR;
 
@@ -104,6 +106,90 @@ else if ($ROI == 'dACC' || $ROI == 'L_dlPFC' || $ROI == 'R_dlPFC') then
 -input ${DATA_DIR}/bsm/${ROI}+tlrc
 
 endif
+
+#echo "*******************************************************************************"
+#echo " AFNI | 3dttest++ and 3dClustSim | " ${SUBJECT}
+#echo "*******************************************************************************"
+
+## NOTE: t-statistics to z-scores - automatically implemented with 3dclustsim
+
+## PRO TIP (Option 1, used here): Simply use -Clustsim with 3dttest++ then append the 3dttest++ -prefix file 
+## to the *.CSimA.cmd file to stage the OSGM results (to .HEAD file) for 3dClusterize.
+
+## Option 2: If not using 3dttest++ for -Clustsim, use afni_proc.py 
+## --OR --
+## Option 3: See https://afni.nimh.nih.gov/pub/dist/doc/program_help/3dClustSim.html 
+## for information on cluster simulation, formation, thresholding, and adding that 
+## data to the dataset's header. This allows 3dClusterize to automatically read 
+## the output of 3dClustSim and 3dRefit instead of using AFNI's 'Clusterize' GUI.
+
+#cd $DATA_DIR/bsm;
+
+#rm *TT*;
+#rm *mthresh*
+#rm ${study}.${SUBJECT}.${task}.${ROI}.OSGM.resid*;
+#rm OSGM_${ROI}*;
+#rm OSGM_${ROI}.CSimA.cmd;
+
+#cd $DATA_DIR/bsm;
+
+#3dttest++ \
+#-setA ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.smooth.resid+tlrc \
+#-resid ${study}.${SUBJECT}.${task}.${ROI}.OSGM.resid \
+#-mask ${ROI}_mask_resamp+tlrc \
+#-prefix OSGM_${ROI}
+##-prefix_clustsim OSGM_${ROI}_ETAC \
+##-ETAC \
+##-ETAC_opt sid=1:pthr=0.00001:name=osgm_00001
+##-CLUSTSIM
+
+#echo "*******************************************************************************"
+#echo " AFNI | 3dClustSim | " ${SUBJECT}
+#echo "*******************************************************************************"
+
+## --------->> OPTIONAL (if thresholds have already been determined)
+
+#rm 3dFWHMx.1D;
+
+#3dFWHMx \
+#-mask ${ROI}_mask_resamp+tlrc \
+#-input ${study}.${SUBJECT}.${task}.${ROI}.OSGM.resid+tlrc
+
+#cd $DATA_DIR/bsm;
+
+#rm *CStemp*;
+
+#3dClustSim \
+#-mask OSGM_${ROI}+tlrc \
+#-acf 0.993995 4.22737 2.08668 \
+#-niml \
+##-prefix CStemp \
+#-athr 0.05 \
+#-pthr 0.001
+
+#echo "*******************************************************************************"
+#echo " AFNI | Scripted 3dRefit from 3dttest++ -CLUSTSIM step | " ${SUBJECT}
+#echo "*******************************************************************************"
+
+## --------->> OPTIONAL (if thresholds have already been determined)
+
+##cd $DATA_DIR/bsm;
+
+##if ($ROI == 'IFG') then
+##sed -i.bck '$s/$/OSGM_IFG+tlrc/' OSGM_${ROI}.CSimA.cmd;
+
+##else if ($ROI == 'dACC') then
+##sed -i.bck '$s/$/OSGM_dACC+tlrc/' OSGM_${ROI}.CSimA.cmd;
+
+##else if ($ROI == 'L_dlPFC') then
+##sed -i.bck '$s/$/OSGM_L_dlPFC+tlrc/' OSGM_${ROI}.CSimA.cmd;
+
+##else if ($ROI == 'R_dlPFC') then
+##sed -i.bck '$s/$/OSGM_R_dlPFC+tlrc/' OSGM_${ROI}.CSimA.cmd;
+
+##endif
+
+##source OSGM_${ROI}.CSimA.cmd;
 
 echo "*******************************************************************************"
 echo " AFNI | 3dDeconvolve task | " ${SUBJECT} "|" ${ROI}

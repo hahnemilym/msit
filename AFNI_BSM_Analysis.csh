@@ -40,22 +40,22 @@ set task = (${study}_bsm)
 # III. INDIVIDUAL ANALYSES
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-set subjects = ($SUBJECT_LIST)
-foreach SUBJECT ( `cat $subjects` )
+#set subjects = ($SUBJECT_LIST)
+#foreach SUBJECT ( `cat $subjects` )
 
-#set subjects = (hc006 hc007)
-#foreach SUBJECT ($subjects)
+set subjects = (hc001)
+foreach SUBJECT ($subjects)
 
 setenv DATA_DIR ${SUBJECTS_DIR}/${SUBJECT}/${task}
 cd $DATA_DIR;
 
-##rm $DATA_DIR/results/${SUBJECT}_durations.par;
-#rm $DATA_DIR/results/${SUBJECT}_durations_dmBLOCK.par;
+rm $DATA_DIR/results/${SUBJECT}_durations.par;
+rm $DATA_DIR/results/${SUBJECT}_durations_dmBLOCK.par;
 
-##cp $MSIT_DIR/durations/${SUBJECT}_durations.par $DATA_DIR/results/;
-#cp $MSIT_DIR/durations/${SUBJECT}_durations_dmBLOCK.par $DATA_DIR/results/;
+#cp $MSIT_DIR/durations/${SUBJECT}_durations.par $DATA_DIR/results/;
+cp $MSIT_DIR/durations/${SUBJECT}_durations_dmBLOCK.par $DATA_DIR/results/;
 
-##set stim_Combined = $DATA_DIR/results/${SUBJECT}_durations.par;
+#set stim_Combined = $DATA_DIR/results/${SUBJECT}_durations.par;
 set stim_Combined = $DATA_DIR/results/${SUBJECT}_durations_dmBLOCK.par;
 
 echo "*******************************************************************************"
@@ -79,7 +79,8 @@ echo "**************************************************************************
 
 ## Use 3dBrickStat TTnew+tlrc -count -percentile 90 1 90 to return # voxels above % threshold
 
-foreach ROI (IFG dACC R_dlPFC L_dlPFC)
+#foreach ROI (IFG dACC R_dlPFC L_dlPFC)
+foreach ROI (dACC)
 
 cd $DATA_DIR;
 
@@ -106,9 +107,9 @@ else if ($ROI == 'dACC' || $ROI == 'L_dlPFC' || $ROI == 'R_dlPFC') then
 
 endif
 
-echo "*******************************************************************************"
-echo " AFNI | 3dttest++ and 3dClustSim | " ${SUBJECT}
-echo "*******************************************************************************"
+#echo "*******************************************************************************"
+#echo " AFNI | 3dttest++ and 3dClustSim | " ${SUBJECT}
+#echo "*******************************************************************************"
 
 ## NOTE: t-statistics to z-scores - automatically implemented with 3dclustsim
 
@@ -122,20 +123,24 @@ echo "**************************************************************************
 ## data to the dataset's header. This allows 3dClusterize to automatically read 
 ## the output of 3dClustSim and 3dRefit instead of using AFNI's 'Clusterize' GUI.
 
-cd $DATA_DIR/bsm;
+#cd $DATA_DIR/bsm;
 
-rm *TT*;
-rm ${study}.${SUBJECT}.${task}.${ROI}.OSGM.resid*;
-rm OSGM_${ROI}*;
-rm OSGM_${ROI}.CSimA.cmd;
+#rm *TT*;
+#rm *mthresh*
+#rm ${study}.${SUBJECT}.${task}.${ROI}.OSGM.resid*;
+#rm OSGM_${ROI}*;
+#rm OSGM_${ROI}.CSimA.cmd;
 
-cd $DATA_DIR/bsm;
+#cd $DATA_DIR/bsm;
 
-3dttest++ \
--setA ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.smooth.resid+tlrc \
--resid ${study}.${SUBJECT}.${task}.${ROI}.OSGM.resid \
--mask ${ROI}_mask_resamp+tlrc \
--prefix OSGM_${ROI}
+#3dttest++ \
+#-setA ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.smooth.resid+tlrc \
+#-resid ${study}.${SUBJECT}.${task}.${ROI}.OSGM.resid \
+#-mask ${ROI}_mask_resamp+tlrc \
+#-prefix OSGM_${ROI}
+##-prefix_clustsim OSGM_${ROI}_ETAC \
+##-ETAC \
+##-ETAC_opt sid=1:pthr=0.00001:name=osgm_00001
 ##-CLUSTSIM
 
 #echo "*******************************************************************************"
@@ -186,77 +191,124 @@ cd $DATA_DIR/bsm;
 
 ##source OSGM_${ROI}.CSimA.cmd;
 
+#echo "*******************************************************************************"
+#echo " AFNI | 3dDeconvolve task | " ${SUBJECT}
+#echo "*******************************************************************************"
+
+#cd $DATA_DIR/bsm;
+
+#3dDeconvolve \
+#-force_TR $TR \
+#-input ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.smooth.resid+tlrc \
+#-nfirst 1 \
+#-censor $DATA_DIR/bsm/${study}.${SUBJECT}.${task}.censor.T.1D \
+##-polort 'A' \
+#-num_stimts $num_stimts \
+##-stim_times_IM 1 $stim_Combined "BLOCK(1.75,1)" \
+#-stim_times_IM 1 $stim_Combined 'dmBLOCK' \
+#-stim_label 1 BSM_IM_IC_Combined \
+#-x1D $DATA_DIR/bsm/LSS.${ROI}.${SUBJECT}.xmat.1D \
+#-allzero_OK \
+#-nobucket \
+#-x1D_stop
+
+#echo "*******************************************************************************"
+#echo " AFNI | 3dLSS | " ${SUBJECT}
+#echo "*******************************************************************************"
+
+#rm $DATA_DIR/bsm/LSS.${ROI}.${SUBJECT}+tlrc*;
+
+#3dLSS \
+#-input ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.smooth.resid+tlrc \
+#-matrix ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}.xmat.1D \
+#-prefix ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}
+
+#echo "*******************************************************************************"
+#echo " AFNI | Beta Series Method COMPLETE | " ${SUBJECT}
+#echo "*******************************************************************************"
+
+#echo "*******************************************************************************"
+#echo " AFNI | 3dDespike | " ${SUBJECT}
+#echo "*******************************************************************************"
+
+#rm ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}_despike*;
+
+#3dDespike \
+#-prefix ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}_despike \
+#${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}+tlrc
+
 echo "*******************************************************************************"
-echo " AFNI | 3dclust | Attenuate size of ROI mask " ${SUBJECT}
+echo " AFNI | 3dTstat | Create sum img of LSS sub bricks for 3dclust " ${SUBJECT}
 echo "*******************************************************************************"
 
 cd $DATA_DIR/bsm;
 
-rm OSGM_${ROI}.ClusterEffEst*
-rm OSGM_${ROI}.ClusterMap*
+rm LSS_${ROI}.ClusterEffEst*;
+rm LSS_${ROI}.ClusterMap*;
+rm ${ROI}_sphere*;
+rm OUT_${ROI}.txt;
+rm LSS.${ROI}.${SUBJECT}_3dmean*;
+rm 3dTstat_autocorr_tsnr_data.txt;
+
+3dTstat \
+-sum \
+-tsnr \
+-autocorr 10 \
+-mask ${ROI}_mask_resamp+tlrc \
+-prefix LSS.${ROI}.${SUBJECT}_3dmean ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}_despike+tlrc
+#-mean \
+#-verbose \
+
+cp LSS.${ROI}.${SUBJECT}_3dmean* ${DATA_DIR}/results/;
+cp 3dTstat_autocorr_tsnr_data.txt ${DATA_DIR}/results/;
+
+echo "*******************************************************************************"
+echo " AFNI | 3dclust | Generate clusters then sphere in ROI mask " ${SUBJECT}
+echo "*******************************************************************************"
 
 3dClusterize \
--inset ${DATA_DIR}/bsm/OSGM_${ROI}+tlrc. \
-#-mask_from_hdr \
+-inset ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}_3dmean+tlrc \
 -mask ${ROI}_mask_resamp+tlrc. \
--1sided RIGHT_TAIL p=0.00000005 \
+-1sided RIGHT_TAIL p=0.001 \
 -clust_nvox 30 \
 -NN 3 \
 -idat 0 \
 -ithr 0 \
--pref_map OSGM_${ROI}.ClusterMap \
--pref_dat OSGM_${ROI}.ClusterEffEst
+-pref_map LSS_${ROI}.ClusterMap \
+-pref_dat LSS_${ROI}.ClusterEffEst > OUT_${ROI}.txt;
 
-#3dcalc \
-#-a OSGM_IFG.ClusterMap+tlrc \
-#-expr 'max(a)' \
-#-prefix OSGM_IFG.ClusterMap_MAX
+cp LSS_${ROI}.ClusterEffEst* $DATA_DIR/results/;
 
-echo "*******************************************************************************"
-echo " AFNI | 3dDeconvolve task | " ${SUBJECT}
-echo "*******************************************************************************"
+cat OUT_${ROI}.txt | sed '20q;d' | tail -c 20 > ${ROI}.txt;
 
-cd $DATA_DIR/bsm;
+3dUndump \
+-prefix ${ROI}_sphere \
+-master LSS_${ROI}.ClusterEffEst+tlrc \
+-srad 5 \
+-xyz ${ROI}.txt
 
-3dDeconvolve \
--force_TR $TR \
--input ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.smooth.resid+tlrc \
--nfirst 1 \
--censor $DATA_DIR/bsm/${study}.${SUBJECT}.${task}.censor.T.1D \
-#-polort 'A' \
--num_stimts $num_stimts \
-#-stim_times_IM 1 $stim_Combined "BLOCK(1.75,1)" \
--stim_times_IM 1 $stim_Combined 'dmBLOCK' \
--stim_label 1 BSM_IM_IC_Combined \
--x1D $DATA_DIR/bsm/LSS.${ROI}.${SUBJECT}.xmat.1D \
--allzero_OK \
--nobucket \
--x1D_stop
+cp ${ROI}_sphere* $DATA_DIR/results/;
 
 echo "*******************************************************************************"
-echo " AFNI | 3dLSS | " ${SUBJECT}
+echo " AFNI | BSM Analysis - MASK $ROI Betas for $SUBJECT "
 echo "*******************************************************************************"
 
-rm $DATA_DIR/bsm/LSS.${ROI}.${SUBJECT}+tlrc*;
+rm LSS_${ROI}.${SUBJECT}_masked*;
+rm LSS_${ROI}.${SUBJECT}_3dmerge*;
 
-3dLSS \
--input ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.smooth.resid+tlrc \
--matrix ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}.xmat.1D \
--prefix ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}
+3dmerge \
+-doall \
+-1fm_noclip \
+-1fmask ${ROI}_sphere+tlrc \
+-prefix LSS_${ROI}.${SUBJECT}_3dmerge ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}_despike+tlrc
+   
+3dcalc \
+-a LSS_${ROI}.${SUBJECT}_3dmerge+tlrc \
+-b ${ROI}_sphere+tlrc \
+-prefix LSS_${ROI}.${SUBJECT}_masked \
+-expr 'a*step(b)'
 
-echo "*******************************************************************************"
-echo " AFNI | 3dDespike | " ${SUBJECT}
-echo "*******************************************************************************"
-
-rm ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}_despike*;
-
-3dDespike \
--prefix ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}_despike \
-${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}+tlrc
-
-echo "*******************************************************************************"
-echo " AFNI | Beta Series Method COMPLETE | " ${SUBJECT}
-echo "*******************************************************************************"
+cp LSS_${ROI}.${SUBJECT}_masked* ${DATA_DIR}/results;
 
 echo "*******************************************************************************"
 echo " AFNI | BSM Analysis - Extract $ROI Betas for $SUBJECT "
@@ -268,26 +320,18 @@ echo " AFNI | 3dbucket            | Stage func file to be masked | "
 echo " AFNI | 3dmaskave           | Average voxels in mask       | "
 echo "*******************************************************************************"
 
-## -perc flag of 3dmaskave may or may not be desireable
-
 cd $DATA_DIR/bsm;
 
-rm ${DATA_DIR}/bsm/${SUBJECT}.${ROI}_LSS_avg_file.1D*;
+rm ${DATA_DIR}/bsm/${SUBJECT}.${ROI}_LSS_avg_file.1D;
 rm ${DATA_DIR}/bsm/${SUBJECT}.${ROI}_LSS_avg*;
 
-3dbucket \
--prefix ${DATA_DIR}/bsm/${SUBJECT}.${ROI}_LSS_avg \
-${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}_despike+tlrc
+3dbucket -prefix ${DATA_DIR}/bsm/${SUBJECT}.${ROI}_LSS_avg LSS_${ROI}.${SUBJECT}_masked+tlrc
 
-3dmaskave \
--quiet \
--mask $DATA_DIR/bsm/OSGM_${ROI}.ClusterMap+tlrc. \
-${DATA_DIR}/bsm/${SUBJECT}.${ROI}_LSS_avg+tlrc \
-> ${DATA_DIR}/bsm/${SUBJECT}.${ROI}_LSS_avg_file.1D
+3dmaskave -quiet -mask ${ROI}_sphere+tlrc ${SUBJECT}.${ROI}_LSS_avg+tlrc > ${DATA_DIR}/bsm/${SUBJECT}.${ROI}_LSS_avg_file.1D
 
-cp ${DATA_DIR}/bsm/${SUBJECT}.${ROI}_LSS_avg_file.1D $MSIT_DIR/beta_extract_output/
+cp ${SUBJECT}.${ROI}_LSS_avg_file.1D $MSIT_DIR/beta_extract_output/;
 
-#1dplot ${SUBJECT}.${ROI}_LSS_avg_file.1D 
+#1dplot ${SUBJECT}.${ROI}_LSS_avg_file.1D
 
 echo "*******************************************************************************"
 echo " AFNI | Beta Series Method - Beta Extraction COMPLETE | " ${SUBJECT}

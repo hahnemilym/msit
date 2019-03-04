@@ -40,11 +40,11 @@ set task = (${study}_bsm)
 # III. INDIVIDUAL ANALYSES
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-#set subjects = ($SUBJECT_LIST)
-#foreach SUBJECT ( `cat $subjects` )
+set subjects = ($SUBJECT_LIST)
+foreach SUBJECT ( `cat $subjects` )
 
-set subjects = (hc009)
-foreach SUBJECT ($subjects)
+#set subjects = (hc009)
+#foreach SUBJECT ($subjects)
 
 setenv DATA_DIR ${SUBJECTS_DIR}/${SUBJECT}/${task}
 cd $DATA_DIR;
@@ -104,51 +104,52 @@ else if ($ROI == 'dACC' || $ROI == 'L_dlPFC' || $ROI == 'R_dlPFC') then
 
 endif
 
-#echo "*******************************************************************************"
-#echo " AFNI | 3dDeconvolve task | " ${SUBJECT} "|" ${ROI}
-#echo "*******************************************************************************"
+echo "*******************************************************************************"
+echo " AFNI | 3dDeconvolve task | " ${SUBJECT} "|" ${ROI}
+echo "*******************************************************************************"
 
-#cd $DATA_DIR/bsm;
+#-polort 'A' \
+#-stim_times_IM 1 $stim_Combined "BLOCK(1.75,1)" \
 
-#3dDeconvolve \
-#-force_TR $TR \
-#-input ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.smooth.resid+tlrc \
-#-nfirst 1 \
-#-censor $DATA_DIR/bsm/${study}.${SUBJECT}.${task}.censor.T.1D \
-##-polort 'A' \
-#-num_stimts $num_stimts \
-##-stim_times_IM 1 $stim_Combined "BLOCK(1.75,1)" \
-#-stim_times_IM 1 $stim_Combined 'dmBLOCK' \
-#-stim_label 1 BSM_IM_IC_Combined \
-#-x1D $DATA_DIR/bsm/LSS.${ROI}.${SUBJECT}.xmat.1D \
-#-allzero_OK \
-#-nobucket \
-#-x1D_stop
+cd $DATA_DIR/bsm;
 
-#echo "*******************************************************************************"
-#echo " AFNI | 3dLSS | " ${SUBJECT} "|" ${ROI}
-#echo "*******************************************************************************"
+3dDeconvolve \
+-num_stimts $num_stimts \
+-force_TR $TR \
+-input ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.smooth.resid+tlrc \
+-nfirst 1 \
+-censor $DATA_DIR/bsm/${study}.${SUBJECT}.${task}.censor.T.1D \
+-stim_times_IM 1 $stim_Combined 'dmBLOCK' \
+-stim_label 1 BSM_IM_IC_Combined \
+-x1D $DATA_DIR/bsm/LSS.${ROI}.${SUBJECT}.xmat.1D \
+-allzero_OK \
+-nobucket \
+-x1D_stop
 
-#rm $DATA_DIR/bsm/LSS.${ROI}.${SUBJECT}+tlrc*;
+echo "*******************************************************************************"
+echo " AFNI | 3dLSS | " ${SUBJECT} "|" ${ROI}
+echo "*******************************************************************************"
 
-#3dLSS \
-#-input ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.smooth.resid+tlrc \
-#-matrix ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}.xmat.1D \
-#-prefix ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}
+rm $DATA_DIR/bsm/LSS.${ROI}.${SUBJECT}+tlrc*;
 
-#echo "*******************************************************************************"
-#echo " AFNI | Beta Series Method COMPLETE | " ${SUBJECT} "|" ${ROI}
-#echo "*******************************************************************************"
+3dLSS \
+-input ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.smooth.resid+tlrc \
+-matrix ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}.xmat.1D \
+-prefix ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}
 
-#echo "*******************************************************************************"
-#echo " AFNI | 3dDespike | " ${SUBJECT} "|" ${ROI}
-#echo "*******************************************************************************"
+echo "*******************************************************************************"
+echo " AFNI | Beta Series Method COMPLETE | " ${SUBJECT} "|" ${ROI}
+echo "*******************************************************************************"
 
-#rm ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}_despike*;
+echo "*******************************************************************************"
+echo " AFNI | 3dDespike | " ${SUBJECT} "|" ${ROI}
+echo "*******************************************************************************"
 
-#3dDespike \
-#-prefix ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}_despike \
-#${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}+tlrc
+rm ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}_despike*;
+
+3dDespike \
+-prefix ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}_despike \
+${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}+tlrc
 
 echo "*******************************************************************************"
 echo " AFNI | 3dTstat | Sum LSS sub bricks for 3dclust | " ${SUBJECT} "|" ${ROI}

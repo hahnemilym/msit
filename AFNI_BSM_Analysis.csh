@@ -19,15 +19,16 @@ setenv ANALYSIS_DIR ${MSIT_DIR}/msit
 setenv IM_PARAMS_DIR $MSIT_DIR/msit/params
 
 # SUBJECT_LIST Directory
-setenv SUBJECT_LIST ${PARAMS_DIR}/subjects.txt
+setenv SUBJECT_LIST $PARAMS_DIR/subjects.txt
 
+# ROI masks Directory
 setenv ROI_DIR $SUBJECTS_DIR/masks/AFNI_ROIs
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # II. Define parameters.
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 set TR = 1.75
-set polort = A
+#set polort = A
 # A = set polynomial order (detrending) automatically
 
 set num_stimts = 1
@@ -43,13 +44,13 @@ set task = (${study}_bsm)
 set subjects = ($SUBJECT_LIST)
 foreach SUBJECT ( `cat $subjects` )
 
-#set subjects = (hc009)
+#set subjects = (pp004 pp005 pp008 pp010 pp016 hc017 hc011 hc021)
 #foreach SUBJECT ($subjects)
 
 setenv DATA_DIR ${SUBJECTS_DIR}/${SUBJECT}/${task}
 cd $DATA_DIR;
 
-rm $DATA_DIR/results/${SUBJECT}_durations.par;
+#rm $DATA_DIR/results/${SUBJECT}_durations.par;
 rm $DATA_DIR/results/${SUBJECT}_durations_dmBLOCK.par;
 
 #cp $MSIT_DIR/durations/${SUBJECT}_durations.par $DATA_DIR/results/;
@@ -77,14 +78,14 @@ echo "**************************************************************************
 echo " AFNI | 3dresample ROI masks to TLRC space | " ${SUBJECT}
 echo "*******************************************************************************"
 
-foreach ROI (R_IFG L_IFG dACC R_dlPFC L_dlPFC )
+foreach ROI (dACC)
 
 cd $DATA_DIR;
 
 rm ${DATA_DIR}/bsm/${ROI}+tlrc*;
 rm ${DATA_DIR}/bsm/*${ROI}_mask_resamp*;
 
-if ($ROI == 'R_IFG' || $ROI == 'L_IFG') then
+if ($ROI == 'R_IFG' || $ROI == 'L_IFG' || $ROI == 'dACC') then
 
 3dcopy ${ROI_DIR}/${ROI}+tlrc $DATA_DIR/bsm/${ROI}
 
@@ -93,7 +94,7 @@ if ($ROI == 'R_IFG' || $ROI == 'L_IFG') then
 -prefix ${DATA_DIR}/bsm/${ROI}_mask_resamp \
 -input ${DATA_DIR}/bsm/${ROI}+tlrc
 
-else if ($ROI == 'dACC' || $ROI == 'L_dlPFC' || $ROI == 'R_dlPFC') then
+else if ($ROI == 'L_dlPFC' || $ROI == 'R_dlPFC') then
 
 3dcopy ${ROI_DIR}/${ROI}.nii $DATA_DIR/bsm/${ROI}
 
@@ -103,6 +104,133 @@ else if ($ROI == 'dACC' || $ROI == 'L_dlPFC' || $ROI == 'R_dlPFC') then
 -input ${DATA_DIR}/bsm/${ROI}+tlrc
 
 endif
+
+echo "*******************************************************************************"
+echo " AFNI | 3dcalc - retain only POSITIVE values | " ${SUBJECT} "|" ${ROI}
+echo "*******************************************************************************"
+
+cd ${DATA_DIR}/bsm;
+
+rm ${DATA_DIR}/bsm/${ROI}_mask_resamp_3dmerge*;
+rm ${DATA_DIR}/bsm/${ROI}.data_masked*;
+rm ${DATA_DIR}/bsm/${ROI}.data_mask_POS*;
+rm ${DATA_DIR}/bsm/${ROI}.data_masked_POS*;
+
+## mask data
+
+3dmerge \
+-doall \
+-1noneg \
+-1fm_noclip \
+-1fmask ${DATA_DIR}/bsm/${ROI}_mask_resamp+tlrc \
+-prefix ${DATA_DIR}/bsm/${ROI}_mask_resamp_3dmerge \
+${DATA_DIR}/func/${study}.${SUBJECT}.${task}.smooth.resid+tlrc
+
+3dcalc \
+-a ${DATA_DIR}/bsm/${ROI}_mask_resamp_3dmerge+tlrc \
+-b ${DATA_DIR}/bsm/${ROI}_mask_resamp+tlrc \
+-prefix ${DATA_DIR}/bsm/${ROI}.data_masked_3dcalc \
+-expr 'a*step(b)'
+
+## Create positive mask then mask data
+
+##3dcalc \
+##-a ${ROI}.data_masked+tlrc \
+##-prefix ${ROI}.data_mask_POS \
+##-expr 'ispositive(a)'
+
+##3dcalc \
+##-a ${ROI}.data_masked+tlrc \
+##-b ${ROI}.data_mask_POS+tlrc \
+##-prefix ${ROI}.data_masked_POS \
+##-expr 'a*step(b)'
+
+echo "*******************************************************************************"
+echo " AFNI | 3dDespike | " ${SUBJECT} "|" ${ROI}
+echo "*******************************************************************************"
+
+rm ${DATA_DIR}/bsm/${ROI}.data_masked+tlrc*;
+rm ${DATA_DIR}/bsm/*despike*
+
+3dDespike \
+-prefix ${DATA_DIR}/bsm/${ROI}.data_masked \
+${DATA_DIR}/bsm/${ROI}.data_masked_3dcalc+tlrc
+
+echo "*******************************************************************************"
+echo " AFNI | 3dTstat | Sum LSS sub bricks for 3dclust | " ${SUBJECT} "|" ${ROI}
+echo "*******************************************************************************"
+
+cd ${DATA_DIR}/bsm;
+
+#rm ${DATA_DIR}/bsm/LSS_${ROI}.ClusterEffEst*;
+#rm ${DATA_DIR}/bsm/LSS_${ROI}.ClusterMap*;
+#rm ${DATA_DIR}/bsm/OUT_${ROI}.txt;
+rm ${DATA_DIR}/bsm/${ROI}_sphere*;
+rm ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}_3dmean*;
+rm ${DATA_DIR}/bsm/${ROI}.3de.OUT.1D;
+rm ${DATA_DIR}/bsm/ext1.txt;
+rm ${DATA_DIR}/bsm/${ROI}.3dExtrema.txt;
+rm ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}_3dsum*;
+
+3dTstat -sum -prefix LSS.${ROI}.${SUBJECT}_3dsum ${ROI}.data_masked+tlrc'[2..190]'
+
+## NOTE: Anything modified w/ 3dExtrema affects the lines starting with 'cat' 
+## Modify accordingly or sphere generation step will NOT work
+
+3dExtrema -volume -maxima -nbest 1 -prefix LSS.${ROI}.${SUBJECT}_3dmean LSS.${ROI}.${SUBJECT}_3dsum+tlrc > ${ROI}.3de.OUT.1D 
+#-mask_thr p=.001
+
+cat ${DATA_DIR}/bsm/${ROI}.3de.OUT.1D | sed '9q;d' | tail -c 48 > ${DATA_DIR}/bsm/ext1.txt;
+cat ${DATA_DIR}/bsm/ext1.txt | sed '1q;d' | head -c 35 > ${DATA_DIR}/bsm/${ROI}.3dExtrema.txt;
+
+#rm ${DATA_DIR}/results/LSS.${ROI}.${SUBJECT}_3dmean*;
+cp ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}_3dmean* ${DATA_DIR}/results/;
+
+echo "*******************************************************************************"
+echo " AFNI | 3dClusterize | Generate clusters for ROI sphere | " ${SUBJECT} "|" ${ROI}
+echo "*******************************************************************************"
+
+##3dClusterize \
+##-inset ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}_3dmean+tlrc \
+##-mask ${ROI}_mask_resamp+tlrc \
+##-1sided RIGHT_TAIL p=0.05 \
+##-clust_nvox 10 \
+##-NN 3 \
+##-ithr 0 \
+##-idat 0 \
+##-pref_map ${DATA_DIR}/bsm/LSS_${ROI}.ClusterMap \
+##-pref_dat ${DATA_DIR}/bsm/LSS_${ROI}.ClusterEffEst > ${DATA_DIR}/bsm/OUT_${ROI}.txt
+
+##cp LSS_${ROI}.ClusterEffEst* $DATA_DIR/results/;
+
+##cat OUT_${ROI}.txt | sed '20q;d' | tail -c 22 > ${DATA_DIR}/bsm/${ROI}.txt;
+
+3dUndump \
+-prefix ${DATA_DIR}/bsm/${ROI}_sphere \
+-master ${DATA_DIR}/bsm/${ROI}.data_masked+tlrc \
+-srad 5 \
+-xyz ${DATA_DIR}/bsm/${ROI}.3dExtrema.txt
+
+cp ${ROI}_sphere* $DATA_DIR/results/;
+
+echo "*******************************************************************************"
+echo " AFNI | 3dmerge, 3dcalc | Mask data w/ ROI sphere | " ${SUBJECT} "|" ${ROI}
+echo "*******************************************************************************"
+
+rm ${DATA_DIR}/bsm/LSS_${ROI}.${SUBJECT}_3dmerge_sphere*;
+rm ${DATA_DIR}/bsm/LSS_${ROI}.${SUBJECT}_sphere_data*;
+
+##3dmerge -doall -1fm_noclip -1fmask ${DATA_DIR}/bsm/${ROI}_sphere+tlrc -prefix ${DATA_DIR}/bsm/LSS_${ROI}.${SUBJECT}_3dmerge_sphere ${DATA_DIR}/bsm/${ROI}.data_masked+tlrc
+
+#cp ${DATA_DIR}/bsm/LSS_${ROI}.${SUBJECT}_3dmerge_sphere* ${DATA_DIR}/results; 
+   
+3dcalc \
+-a ${DATA_DIR}/bsm/${ROI}.data_masked+tlrc \
+-b ${DATA_DIR}/bsm/${ROI}_sphere+tlrc \
+-prefix ${DATA_DIR}/bsm/LSS_${ROI}.${SUBJECT}_sphere_data \
+-expr 'a*step(b)'
+
+cp ${DATA_DIR}/bsm/LSS_${ROI}.${SUBJECT}_sphere_data* ${DATA_DIR}/results;
 
 echo "*******************************************************************************"
 echo " AFNI | 3dDeconvolve task | " ${SUBJECT} "|" ${ROI}
@@ -116,7 +244,7 @@ cd $DATA_DIR/bsm;
 3dDeconvolve \
 -num_stimts $num_stimts \
 -force_TR $TR \
--input ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.smooth.resid+tlrc \
+-input ${DATA_DIR}/bsm/LSS_${ROI}.${SUBJECT}_sphere_data+tlrc \
 -nfirst 1 \
 -censor $DATA_DIR/bsm/${study}.${SUBJECT}.${task}.censor.T.1D \
 -stim_times_IM 1 $stim_Combined 'dmBLOCK' \
@@ -126,91 +254,29 @@ cd $DATA_DIR/bsm;
 -nobucket \
 -x1D_stop
 
+##'.FD.1D'
+##'.motion_derivative.1D'
+##'censor.1D'
+##'.motion.square.1D'
+##'.motion_pre_t.1D'
+##'.motion_pre_t_square.1D'
+
 echo "*******************************************************************************"
 echo " AFNI | 3dLSS | " ${SUBJECT} "|" ${ROI}
 echo "*******************************************************************************"
 
-rm $DATA_DIR/bsm/LSS.${ROI}.${SUBJECT}+tlrc*;
+rm ${DATA_DIR}/bsm/3dLSS.${ROI}.${SUBJECT}+tlrc*;
 
 3dLSS \
--input ${DATA_DIR}/func/${study}.${SUBJECT}.${task}.smooth.resid+tlrc \
+-input ${DATA_DIR}/bsm/LSS_${ROI}.${SUBJECT}_sphere_data+tlrc \
 -matrix ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}.xmat.1D \
--prefix ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}
+-prefix ${DATA_DIR}/bsm/3dLSS.${ROI}.${SUBJECT}
+
+cp ${DATA_DIR}/bsm/3dLSS.${ROI}.${SUBJECT}* ${DATA_DIR}/results/ 
 
 echo "*******************************************************************************"
 echo " AFNI | Beta Series Method COMPLETE | " ${SUBJECT} "|" ${ROI}
 echo "*******************************************************************************"
-
-echo "*******************************************************************************"
-echo " AFNI | 3dDespike | " ${SUBJECT} "|" ${ROI}
-echo "*******************************************************************************"
-
-rm ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}_despike*;
-
-3dDespike \
--prefix ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}_despike \
-${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}+tlrc
-
-echo "*******************************************************************************"
-echo " AFNI | 3dTstat | Sum LSS sub bricks for 3dclust | " ${SUBJECT} "|" ${ROI}
-echo "*******************************************************************************"
-
-#-tsnr \
-#-autocorr 10 \
-#-mean \
-
-cd $DATA_DIR/bsm;
-
-rm LSS_${ROI}.ClusterEffEst*;
-rm LSS_${ROI}.ClusterMap*;
-rm ${ROI}_sphere*;
-rm OUT_${ROI}.txt;
-rm LSS.${ROI}.${SUBJECT}_3dmean*;
-#rm 3dTstat_autocorr_tsnr_data.txt;
-
-3dTstat -sum -mask ${ROI}_mask_resamp+tlrc -prefix LSS.${ROI}.${SUBJECT}_3dmean ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}_despike+tlrc
-
-cp LSS.${ROI}.${SUBJECT}_3dmean* ${DATA_DIR}/results/;
-#cp 3dTstat_autocorr_tsnr_data.txt ${DATA_DIR}/results/;
-
-echo "*******************************************************************************"
-echo " AFNI | 3dClusterize | Generate clusters for ROI sphere | " ${SUBJECT} "|" ${ROI}
-echo "*******************************************************************************"
-
-3dClusterize -inset ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}_3dmean+tlrc -mask ${DATA_DIR}/bsm/${ROI}_mask_resamp+tlrc. -1sided RIGHT_TAIL p=0.001 -clust_nvox 30 -NN 3 -ithr 0 -idat 0 -pref_map ${DATA_DIR}/bsm/LSS_${ROI}.ClusterMap -pref_dat ${DATA_DIR}/bsm/LSS_${ROI}.ClusterEffEst > OUT_${ROI}.txt
-
-cp LSS_${ROI}.ClusterEffEst* $DATA_DIR/results/;
-
-cat OUT_${ROI}.txt | sed '20q;d' | tail -c 22 > ${ROI}.txt;
-
-3dUndump \
--prefix ${ROI}_sphere \
--master LSS_${ROI}.ClusterEffEst+tlrc \
--srad 5 \
--xyz ${ROI}.txt
-
-cp ${ROI}_sphere* $DATA_DIR/results/;
-
-echo "*******************************************************************************"
-echo " AFNI | 3dmerge, 3dcalc | Mask data w/ ROI sphere | " ${SUBJECT} "|" ${ROI}
-echo "*******************************************************************************"
-
-rm LSS_${ROI}.${SUBJECT}_masked*;
-rm LSS_${ROI}.${SUBJECT}_3dmerge*;
-
-3dmerge \
--doall \
--1fm_noclip \
--1fmask ${ROI}_sphere+tlrc \
--prefix LSS_${ROI}.${SUBJECT}_3dmerge ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}_despike+tlrc
-   
-3dcalc \
--a LSS_${ROI}.${SUBJECT}_3dmerge+tlrc \
--b ${ROI}_sphere+tlrc \
--prefix LSS_${ROI}.${SUBJECT}_masked \
--expr 'a*step(b)'
-
-cp LSS_${ROI}.${SUBJECT}_masked* ${DATA_DIR}/results;
 
 echo "*******************************************************************************"
 echo " AFNI | 3dbucket, 3dmaskave | Extract Beta Estimates | " ${SUBJECT} "|" ${ROI}
@@ -218,10 +284,9 @@ echo "**************************************************************************
 
 cd $DATA_DIR/bsm;
 
-rm ${DATA_DIR}/bsm/${SUBJECT}.${ROI}_LSS_avg_file.1D;
 rm ${DATA_DIR}/bsm/${SUBJECT}.${ROI}_LSS_avg*;
 
-3dbucket -prefix ${DATA_DIR}/bsm/${SUBJECT}.${ROI}_LSS_avg LSS_${ROI}.${SUBJECT}_masked+tlrc
+3dbucket -prefix ${DATA_DIR}/bsm/${SUBJECT}.${ROI}_LSS_avg 3dLSS.${ROI}.${SUBJECT}+tlrc
 
 3dmaskave -quiet -mask ${ROI}_sphere+tlrc ${SUBJECT}.${ROI}_LSS_avg+tlrc > ${DATA_DIR}/bsm/${SUBJECT}.${ROI}_LSS_avg_file.1D
 

@@ -46,11 +46,11 @@ set do_epi = 'yes'
 # Initialize subject(s) environment
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 
-set subjects = ($SUBJECT_LIST)
-foreach subj ( `cat $subjects` )
+#set subjects = ($SUBJECT_LIST)
+#foreach subj ( `cat $subjects` )
 
-#set subjects = (hc008)
-#foreach subj ($subjects)
+set subjects = (hc009 hc018 hc019 hc021 hc028 hc031 hc036 pp004 pp006 pp007 pp012 pp015)
+foreach subj ($subjects)
 
 setenv DATA_DIR $SUBJECTS_DIR/${subj}/${task}
 

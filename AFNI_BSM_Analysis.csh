@@ -40,13 +40,15 @@ set task = (${study}_bsm)
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
 # III. INDIVIDUAL ANALYSES
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~#
-
-set subjects = ($SUBJECT_LIST)
-foreach SUBJECT ( `cat $subjects` )
-
 #set subjects = (pp004 pp005 pp008 pp010 pp016 hc017 hc011 hc021)
 #set subjects = (hc001)
 #foreach SUBJECT ($subjects)
+
+#set subjects = ($SUBJECT_LIST)
+#foreach SUBJECT ( `cat $subjects` )
+
+set subjects = (hc009 hc018 hc019 hc021 hc028 hc031 hc036 pp004 pp006 pp007 pp012 pp015)
+foreach SUBJECT ($subjects)
 
 echo "*******************************************************************************"
 echo " AFNI | Beta Series Method Analysis | " ${SUBJECT}
@@ -219,6 +221,7 @@ rm ${DATA_DIR}/bsm/LSS.${ROI}.${SUBJECT}_3dsum+tlrc*;
 
 3dTstat \
 -sum \
+#-mean \
 -prefix LSS.${ROI}.${SUBJECT}_3dsum \
 ${ROI}.${SUBJECT}.LSS.data_masked+tlrc
 
